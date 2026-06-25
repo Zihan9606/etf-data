@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
 生成ETF申购流入分析HTML — 全量排行 + 量化结论 + 定性分析 + 重叠推荐 + 日期切换
-升级版: 39列字段(含7个新字段中文释义) + 所有历史日期数据嵌入, 前端下拉切换
+升级版2: 数据与HTML分离模式
+  - Python脚本端: 读取CSV + 调用westock API获取最新数据 → 导出 etf_history/etf_data.json
+  - HTML端: 通过 fetch('/etf_data.json') 实时加载, 不嵌入数据到HTML体内
+  - 使用方式: cd工作目录 && python3 server.py → 浏览器打开 localhost:8080
+  - 好处: 数据更新后只需重新运行本脚本, HTML自动读取新数据, 无需改HTML
 """
 import subprocess, json, os, csv
 from collections import defaultdict
@@ -9,6 +13,7 @@ from collections import defaultdict
 OUTPUT_DIR = "/Users/andy/WorkBuddy/2026-06-24-23-34-24/etf_history"
 CSV_FILE = os.path.join(OUTPUT_DIR, "etf_daily.csv")
 HTML_FILE = "/Users/andy/WorkBuddy/2026-06-24-23-34-24/全量指数申购流入排行.html"
+DATA_JSON = os.path.join(OUTPUT_DIR, "etf_data.json")
 
 # ========== 39列字段: 英文名 ↔ 中文释义 ==========
 FIELD_CN = {
@@ -413,8 +418,29 @@ html += """</tbody></table>
 </div>
 
 <script>
-// ========== 全量数据嵌入 ==========
-const ALL_DATA = """ + json.dumps(all_dates_json, ensure_ascii=False) + """;
+// ========== 数据从 etf_data.json 动态加载 ==========
+// HTML 不内置任何数据, 页面启动时自动 fetch
+// 数据更新后重新运行 gen_analysis_html.py 即可, 浏览器刷新即得最新
+let ALL_DATA = {};
+let currentDate = '""" + today_str + """';
+
+function init() {
+  // 从相对路径加载数据JSON (与HTML同服务器的etf_history/etf_data.json)
+  fetch('etf_history/etf_data.json?_t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      ALL_DATA = data;
+      currentDate = Object.keys(ALL_DATA).sort().pop() || '""" + today_str + """';
+      document.getElementById('datePicker').value = currentDate;
+      if (document.querySelector('#tab-rank.active')) {
+        switchDate(currentDate);
+      }
+    })
+    .catch(err => {
+      document.getElementById('dateInfo').textContent = '⚠️ 数据加载失败: ' + err.message;
+      document.getElementById('dateInfo').style.color = '#ef4444';
+    });
+}
 
 function showTip(title, body) {
   document.getElementById('tipTitle').textContent = title;
@@ -422,13 +448,16 @@ function showTip(title, body) {
   document.getElementById('tipOverlay').classList.add('show');
 }
 
-// ========== 日期切换 ==========
-let currentDate = '""" + today_str + """';
-
+// ========== 日期切换（已由 init() 设置 currentDate）==========
 function switchDate(date) {
   currentDate = date;
   document.getElementById('dateInfo').textContent = '📊 ' + date + ' 数据';
-  renderAll(date);
+  document.getElementById('datePicker').value = date;
+  if (ALL_DATA[currentDate]) {
+    renderAll(date);
+  } else {
+    document.getElementById('dateInfo').textContent = '⚠️ ' + date + ' 暂无数据';
+  }
 }
 
 function renderAll(date) {
@@ -595,8 +624,10 @@ function filt() {
   document.getElementById('countInfo').textContent = vis + '/' + rows.length + '条';
 }
 
-// ========== 初始化 ==========
-switchDate('""" + today_str + """');
+// ========== 初始化: 从JSON文件加载 ==========
+// 数据与HTML分离, 启动时自动 fetch etf_history/etf_data.json
+// HTML无硬编码数据, 数据更新只需重新运行本脚本, 无需修改HTML
+init();
 
 // 点击表头排序
 document.getElementById('tableHeader').addEventListener('click', function(e) {
@@ -626,5 +657,11 @@ document.getElementById('tableHeader').addEventListener('click', function(e) {
 
 with open(HTML_FILE, 'w', encoding='utf-8') as f:
     f.write(html)
+
+# 导出数据JSON (供HTML fetch加载)
+with open(DATA_JSON, 'w', encoding='utf-8') as f:
+    json.dump(all_dates_json, f, ensure_ascii=False)
 print(f"✅ 已生成: {HTML_FILE} ({len(html)} bytes)")
-print(f"   嵌入 {len(dates)} 个交易日数据, 日期切换已启用")
+print(f"✅ 已导出: {DATA_JSON} ({len(json.dumps(all_dates_json))} bytes)")
+print(f"   数据与HTML分离: 含 {len(dates)} 个交易日")
+print(f"   使用方式: 启动 server.py 后通过 HTTP 访问, 支持日期切换")
