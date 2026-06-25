@@ -1,4 +1,11 @@
-etf_history/
+# 忽略生成文件
 *.html
 *.pyc
 __pycache__/
+push_to_github.sh
+
+# etf_history: 只跟踪CSV和合并文件, 不跟踪每日JSON
+etf_history/*.json
+!etf_history/etf_daily.csv
+!etf_history/history.jsonl
+!etf_history/README.md
