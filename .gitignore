@@ -1,0 +1,4 @@
+etf_history/
+*.html
+*.pyc
+__pycache__/
