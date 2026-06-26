@@ -541,7 +541,7 @@ html += """</tbody></table>
   <div class="section-title">⭐ 自选标的监控</div>
   <div class="section-sub">输入ETF代码添加到自选, 独立展现量化和定性分析结果（新代码下次定时采集后生效）</div>
   <div id="watchlistInput" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <input id="watchlistCodeInput" type="text" placeholder="输入ETF代码, 如 sh512890" style="flex:1;min-width:180px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-family:monospace">
+    <input id="watchlistCodeInput" type="text" placeholder="输入6位ETF代码, 如 512100 或 sh512100" style="flex:1;min-width:180px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-family:monospace">
     <button onclick="addWatchlistItem()" style="padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">+ 添加</button>
     <button onclick="clearWatchlist()" style="padding:8px 20px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">清空</button>
   </div>
@@ -885,14 +885,18 @@ async function saveWatchlist(list) {
 }
 async function addWatchlistItem() {
   const input = document.getElementById('watchlistCodeInput');
-  const code = input.value.trim().toLowerCase();
-  if (!code) return;
+  let raw = input.value.trim().toLowerCase();
+  if (!raw) return;
+  // 自动补全市场前缀: 纯6位数字, 5开头→sh, 其他→sz
+  if (/^\d{6}$/.test(raw)) {
+    raw = (raw.startsWith('5') ? 'sh' : 'sz') + raw;
+  }
   let list = await loadWatchlist();
-  if (list.includes(code)) {
+  if (list.includes(raw)) {
     input.value = '';
     return;
   }
-  list.push(code);
+  list.push(raw);
   await saveWatchlist(list);
   input.value = '';
   await refreshWatchlist();
