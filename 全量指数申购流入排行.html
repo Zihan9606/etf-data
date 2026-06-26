@@ -84,6 +84,7 @@ tr:hover{background:#f8fafc!important}
   <div class="nav-tab" onclick="switchTab('tab-qual')">🔍 定性分析</div>
   <div class="nav-tab" onclick="switchTab('tab-quant')">📈 量化分析</div>
   <div class="nav-tab" onclick="switchTab('tab-summary')">🎯 最终结论</div>
+  <div class="nav-tab" onclick="switchTab('tab-watchlist')">⭐ 自选监控</div>
 </div>
 
 <div class="controls" style="background:#f1f5f9;padding:10px 28px;border-bottom:1px solid #e2e8f0">
@@ -175,6 +176,20 @@ tr:hover{background:#f8fafc!important}
   ④ <b>卖点预警</b>: 当日出现"出货嫌疑/恐慌出逃/大额流出"的品种, 建议回避或卖出。</div>
 </div>
 
+<div id="tab-watchlist" class="tab-content">
+  <div class="section-title">⭐ 自选标的监控</div>
+  <div class="section-sub">输入ETF代码添加到自选, 独立展现量化和定性分析结果（新代码下次定时采集后生效）</div>
+  <div id="watchlistInput" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <input id="watchlistCodeInput" type="text" placeholder="输入ETF代码, 如 sh512890" style="flex:1;min-width:180px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-family:monospace">
+    <button onclick="addWatchlistItem()" style="padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">+ 添加</button>
+    <button onclick="clearWatchlist()" style="padding:8px 20px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">清空</button>
+  </div>
+  <div id="watchlistTags" style="margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px"></div>
+  <div id="watchlistContent">
+    <p style="color:#94a3b8;padding:40px;text-align:center">请先在上方输入ETF代码添加关注标的</p>
+  </div>
+</div>
+
 <div id="tipOverlay" class="tip-overlay" onclick="this.classList.remove('show')">
   <div class="tip-box">
     <button class="close-tip" onclick="document.getElementById('tipOverlay').classList.remove('show')">✕</button>
@@ -200,6 +215,7 @@ function init() {
       currentDate = keys.pop() || '2026-06-26';
       document.getElementById('datePicker').value = currentDate;
       renderStockFlowStatus();
+      renderWatchlistTags();
       if (document.querySelector('#tab-rank.active')) {
         switchDate(currentDate);
       }
@@ -236,6 +252,7 @@ function renderAll(date) {
   renderQuant(date, dd);
   renderMarketStats(dd);
   renderSummary(date, dd);
+  renderWatchlist(date, dd);
   updateStats(dd);
   filt();
 }
@@ -341,10 +358,10 @@ function renderMarketStats(dd) {
   }
   h += '</table></div>';
   
-  // 中位数 + 平均数
+  // 中位数 + 平均数 (全量130只, 含零值)
   h += '<div class="backtest-box" style="margin:0">';
   h += '<h5 style="font-size:13px;margin-bottom:8px">📊 全市场中位数</h5>';
-  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">资金流:</span> <strong>' + (ms.medianFlow > 0 ? '+' : '') + ms.medianFlow + '亿</strong></div>';
+  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">资金流:</span> <strong>' + (ms.medianFlow > 0 ? '+' : '') + ms.medianFlow + '亿</strong> <span style="font-size:11px;color:#94a3b8">(分布: ↑' + ms.posCount + '只, —' + ms.zeroCount + '只, ↓' + ms.negCount + '只)</span></div>';
   h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">份额变化率:</span> <strong>' + (ms.medianChg > 0 ? '+' : '') + ms.medianChg + '%</strong></div>';
   h += '</div>';
   
@@ -355,7 +372,7 @@ function renderMarketStats(dd) {
   h += '</div>';
   
   h += '</div>';
-  h += '<div style="font-size:11px;color:#94a3b8;margin:-8px 0 16px">💡 推荐标的资金流/份额变化若高于中位数和均值, 说明在全市场中相对强势。低于则需谨慎。</div>';
+  h += '<div style="font-size:11px;color:#94a3b8;margin:-8px 0 16px">💡 中位数为0说明排名正中间的第65只ETF资金流恰好持平——实际分布为 <strong>↑' + ms.posCount + '只净申购 / —' + ms.zeroCount + '只持平 / ↓' + ms.negCount + '只净赎回</strong>。推荐标的若>0代表资金流超过半数ETF。</div>';
   
   const panel = document.getElementById('marketStatsPanel');
   if (panel) panel.innerHTML = h;
@@ -481,6 +498,153 @@ function filt() {
     if (s) vis++;
   }
   document.getElementById('countInfo').textContent = vis + '/' + rows.length + '条';
+}
+
+// ========== 自选监控 ==========
+let _watchlistCache = null; // 缓存, 减少API调用
+
+async function loadWatchlist() {
+  try {
+    const r = await fetch('/api/watchlist');
+    _watchlistCache = await r.json();
+    return _watchlistCache;
+  } catch(e) {
+    _watchlistCache = _watchlistCache || [];
+    return _watchlistCache;
+  }
+}
+async function saveWatchlist(list) {
+  _watchlistCache = list;
+  try {
+    await fetch('/api/watchlist', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(list)
+    });
+  } catch(e) {}
+}
+async function addWatchlistItem() {
+  const input = document.getElementById('watchlistCodeInput');
+  const code = input.value.trim().toLowerCase();
+  if (!code) return;
+  let list = await loadWatchlist();
+  if (list.includes(code)) {
+    input.value = '';
+    return;
+  }
+  list.push(code);
+  await saveWatchlist(list);
+  input.value = '';
+  await refreshWatchlist();
+}
+async function removeWatchlistItem(code) {
+  let list = await loadWatchlist();
+  list = list.filter(x => x !== code);
+  await saveWatchlist(list);
+  await refreshWatchlist();
+}
+async function clearWatchlist() {
+  if (!confirm('确定清空所有自选标的?')) return;
+  await saveWatchlist([]);
+  document.getElementById('watchlistContent').innerHTML =
+    '<p style="color:#94a3b8;padding:40px;text-align:center">请先在上方输入ETF代码添加关注标的</p>';
+  await renderWatchlistTags();
+}
+async function renderWatchlistTags() {
+  const list = await loadWatchlist();
+  const container = document.getElementById('watchlistTags');
+  if (list.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = list.map(code =>
+    `<span style="display:inline-flex;align-items:center;padding:4px 10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;font-size:12px;color:#1d4ed8">
+      <code style="font-size:11px">${code}</code>
+      <span onclick="removeWatchlistItem('${code}')" style="margin-left:6px;cursor:pointer;color:#94a3b8;font-size:14px">&times;</span>
+    </span>`
+  ).join('');
+}
+function renderWatchlist(date, dd) {
+  loadWatchlist().then(list => {
+    const container = document.getElementById('watchlistContent');
+    if (list.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;padding:40px;text-align:center">请先在上方输入ETF代码添加关注标的</p>';
+      return;
+    }
+    // 从dd.data中查找匹配watchlist的条目 (按codes字段或idx名称匹配)
+    const items = list.map(code => {
+      const found = dd.data.find(r =>
+        (Array.isArray(r.codes) && r.codes.includes(code)) ||
+        r.mainCode === code || r.name === code
+      );
+      return found ? {item: found, code: code} : null;
+    }).filter(Boolean);
+    const notFound = list.filter(code =>
+      !items.some(x => x.code === code)
+    );
+    let h = '';
+    // 监控表
+    h += '<h4 style="margin:12px 0 8px">📊 自选标的全景监控 <span class="count-badge">' + items.length + '/' + list.length + '</span></h4>';
+    if (items.length > 0) {
+      h += '<div class="table-wrap"><table><thead><tr>';
+      h += '<th>代码</th><th>指数</th><th>资金流</th><th>份额变化</th><th>涨跌幅</th><th>vs中位数</th><th>定性信号</th><th>量化</th><th>卖点</th></tr></thead><tbody>';
+      for (const {item: r, code: c} of items) {
+        const inOverlap = dd.overlap.includes(r.name);
+        const inQuant = dd.onlyQuant.includes(r.name);
+        const inQual = dd.onlyQual.includes(r.name);
+        const sellSig = dd.sellSignals.find(s => s.name === r.name);
+        const vsMedian = dd.marketStats && r.flow > dd.marketStats.medianFlow ? '🟢' : (dd.marketStats && r.flow < dd.marketStats.medianFlow ? '🔴' : '⚪');
+        h += '<tr>';
+        h += '<td><code style="font-size:11px">' + c + '</code></td>';
+        h += '<td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td>';
+        h += '<td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td>';
+        h += '<td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td>';
+        h += '<td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td>';
+        h += '<td>' + vsMedian + '</td>';
+        h += '<td class="desc-cell">' + (r.sig || '-') + '</td>';
+        h += '<td>' + (inOverlap ? '<span class="dir-badge dir-in" style="font-weight:600">⭐⭐重叠</span>' : inQuant ? '<span style="color:#2563eb;font-size:11px">📊量化</span>' : inQual ? '<span style="color:#f59e0b;font-size:11px">🔍定性</span>' : '<span style="color:#94a3b8">-</span>') + '</td>';
+        h += '<td>' + (sellSig ? '<span class="dir-badge dir-out" style="font-weight:600">⚠️卖出</span>' : '<span style="color:#94a3b8">-</span>') + '</td>';
+        h += '</tr>';
+      }
+      h += '</tbody></table></div>';
+    }
+    // 综合建议卡片
+    if (items.length > 0) {
+      h += '<h4 style="margin:20px 0 8px">🎯 综合建议</h4>';
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">';
+      for (const {item: r, code: c} of items) {
+        const inOverlap = dd.overlap.includes(r.name);
+        const inQuant = dd.onlyQuant.includes(r.name);
+        const inQual = dd.onlyQual.includes(r.name);
+        const sellSig = dd.sellSignals.find(s => s.name === r.name);
+        let action, bg, border;
+        if (inOverlap && !sellSig) { action = '⭐⭐⭐ 强烈关注'; bg = '#fefce8'; border = '#f59e0b'; }
+        else if (inQuant && !sellSig) { action = '📈 量化看好'; bg = '#f0fdf4'; border = '#86efac'; }
+        else if (inQual && !sellSig) { action = '🔍 定性关注'; bg = '#eff6ff'; border = '#bfdbfe'; }
+        else if (sellSig) { action = '🔴 建议卖出'; bg = '#fef2f2'; border = '#ef4444'; }
+        else if (r.flow > 0) { action = '➡️ 持有观望'; bg = '#f8fafc'; border = '#e2e8f0'; }
+        else { action = '⬇️ 资金流出, 暂不关注'; bg = '#f8fafc'; border = '#e2e8f0'; }
+        h += '<div style="padding:12px;border-radius:8px;background:' + bg + ';border:1px solid ' + border + '">';
+        h += '<div style="font-size:13px;font-weight:600"><code style="font-size:11px">' + c + '</code> ' + r.name + '</div>';
+        h += '<div style="font-size:12px;margin-top:4px;color:#64748b">' + action + '</div>';
+        h += '<div style="font-size:11px;margin-top:4px;color:#94a3b8">资金流' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿 · 份额' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '% · ' + (r.sig || '信号不明显') + '</div>';
+        h += '</div>';
+      }
+      h += '</div>';
+    }
+    // 未找到的提示
+    if (notFound.length > 0) {
+      h += '<div style="margin-top:12px;padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:12px;color:#991b1b">';
+      h += '⚠️ 以下代码在当天数据中未找到（可能是新加入的自选, 下次定时采集后自动补全）: ';
+      h += notFound.join(', ');
+      h += '</div>';
+    }
+    container.innerHTML = h;
+  });
+}
+async function refreshWatchlist() {
+  await renderWatchlistTags();
+  const dd = ALL_DATA[currentDate];
+  if (dd) renderWatchlist(currentDate, dd);
 }
 
 // ========== 初始化: 从JSON文件加载 ==========
