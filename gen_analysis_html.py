@@ -211,7 +211,8 @@ for d in dates:
         fdir = "in" if flow > 0 else ("out" if flow < 0 else "flat")
         sig, desc = qual_sig.get(name, ('',''))
         entry = {
-            'rank': rank, 'name': name, 'codes': len(dd['codes']), 'shares': round(dd['shares'],2),
+            'rank': rank, 'name': name, 'codes': dd['codes'], 'mainCode': dd.get('main_code',''),
+            'shares': round(dd['shares'],2),
             'flow': round(flow,2), 'chgPct': round(dd['chg_pct'],2), 'pc': round(dd['pc'],2),
             'nav': round(dd['nav'],2), 'disc': dd['disc'], 'turnover': round(dd['turnover'],1),
             'volume': int(dd['volume']), 'ytd': round(dd['ytd'],1), 'r1m': round(dd['r1m'],1),
@@ -220,12 +221,54 @@ for d in dates:
             'dir': fdir, 'sig': sig, 'desc': desc, 'flow10': round(dd['flow']*10,0),
         }
         date_data.append(entry)
+    
+    # 卖点信号: 对比前一日推荐, 看今日是否转坏
+    sell_signals = []
+    if d != dates[0]:
+        prev_d = dates[dates.index(d) - 1]
+        prev_data = all_dates_json.get(prev_d, {})
+        prev_overlap = prev_data.get('overlap', [])
+        prev_quant = prev_data.get('onlyQuant', [])
+        prev_all_buys = set(list(prev_overlap) + list(prev_quant))
+        prev_qual_buys = prev_data.get('onlyQual', [])
+        
+        for prev_buy in prev_all_buys:
+            if prev_buy in by_idx:
+                cur = by_idx[prev_buy]
+                cur_flow = cur['flow']
+                cur_sig, _ = qual_sig.get(prev_buy, ('', ''))
+                is_danger = any(k in cur_sig for k in ['出货','恐慌'])
+                
+                reasons = []
+                sell_type = ''
+                if cur_flow < -1:
+                    reasons.append(f"资金流出{cur_flow:.2f}亿")
+                    sell_type = 'quant'
+                if is_danger:
+                    reasons.append(f"定性信号: {cur_sig.strip().split(' ')[0]}")
+                    sell_type = 'both' if sell_type == 'quant' else 'qual'
+                
+                if reasons:
+                    sell_signals.append({
+                        'name': prev_buy,
+                        'mainCode': by_idx[prev_buy].get('main_code',''),
+                        'prevFlow': prev_data.get('data',[])[0].get('flow',0) if prev_data.get('data') else 0,
+                        'curFlow': round(cur_flow,2),
+                        'curChg': round(cur['chg_pct'],2),
+                        'curPc': round(cur['pc'],2),
+                        'sig': cur_sig,
+                        'reasons': '; '.join(reasons),
+                        'type': sell_type,
+                        'wasInOverlap': prev_buy in prev_overlap,
+                    })
+    
     all_dates_json[d] = {
         'data': date_data,
         'inflow': inf, 'outflow': outf, 'flat': fl, 'total': len(ranked),
         'overlap': sorted(overlap, key=lambda x: by_idx[x]['flow'], reverse=True),
         'onlyQuant': sorted(oq, key=lambda x: by_idx[x]['flow'], reverse=True)[:10],
         'onlyQual': sorted(ol, key=lambda x: by_idx[x]['flow'], reverse=True)[:10],
+        'sellSignals': sorted(sell_signals, key=lambda x: x['curFlow']),
     }
 
 # 回测数据
@@ -305,6 +348,14 @@ tr:hover{{background:#f8fafc!important}}
 @media(max-width:768px){{.tab-content{{padding:12px}} .nav-tabs{{overflow-x:auto}}}}
 .new-field{{color:#4f46e5}}
 .th-{{color:#6366f1;font-weight:600}}
+.code-sub{{font-size:10px;color:#94a3b8;font-weight:400}}
+.code-sub-sm{{font-size:10px;color:#94a3b8;font-weight:400}}
+.sell-alert{{padding:16px;border-radius:10px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #ef4444;margin:16px 0}}
+.sell-alert h3{{font-size:16px;color:#991b1b;margin-bottom:8px}}
+.sell-row{{background:#fff}}
+.sell-flow{{color:#ef4444!important}}
+.sell-strong{{display:inline-block;padding:2px 8px;border-radius:4px;background:#ef4444;color:#fff;font-size:10px;font-weight:600;margin-right:4px}}
+.sell-normal{{display:inline-block;padding:2px 8px;border-radius:4px;background:#f97316;color:#fff;font-size:10px;font-weight:600;margin-right:4px}}
 </style></head>
 <body>
 
@@ -480,8 +531,8 @@ function renderTable(date, dd) {
     h += '<tr class="' + (r.flow > 0 ? 'bg-green-50' : r.flow < 0 ? 'bg-red-50' : '') + '">';
     h += '<td class="rank-cell">' + r.rank + '</td>';
     h += '<td><span class="dir-badge dir-' + r.dir + '">' + (r.dir === 'in' ? '净申购' : r.dir === 'out' ? '净赎回' : '持平') + '</span></td>';
-    h += '<td class="name-cell">' + r.name + '</td>';
-    h += '<td>' + r.codes + '</td>';
+    h += '<td class="name-cell">' + r.name + '<br><span class="code-sub">' + (Array.isArray(r.codes) ? r.codes.join(', ') : r.codes || '') + '</span></td>';
+    h += '<td>' + (Array.isArray(r.codes) ? r.codes.length : (r.codes || 0)) + '</td>';
     h += '<td>' + r.shares.toFixed(2) + '</td>';
     h += '<td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '</td>';
     h += '<td><div class="bar-wrap"><div class="bar-bar" style="width:' + barPct.toFixed(1) + '%;background:' + (r.flow > 0 ? '#22c55e' : r.flow < 0 ? '#ef4444' : '#9ca3af') + '"></div></div></td>';
@@ -529,7 +580,7 @@ function renderQual(date, dd) {
     h += '<h4>' + sec.title + ' <span class="count-badge">' + items.length + '个</span></h4>';
     h += '<table class="qual-table"><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>信号说明</th></tr>';
     for (const r of items.slice(0, 10)) {
-      h += '<tr><td class="name-cell">' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
     }
     h += '</table></div>';
   }
@@ -543,7 +594,7 @@ function renderQuant(date, dd) {
   for (const name of qb) {
     const r = dd.data.find(x => x.name === name);
     if (!r) continue;
-    h += '<tr><td>' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td></tr>';
+    h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td></tr>';
   }
   tb.innerHTML = h || '<tr><td colspan="5" style="color:#64748b;text-align:center">当前日期无符合条件的量化推荐</td></tr>';
 }
@@ -552,14 +603,38 @@ function renderSummary(date, dd) {
   const ov = dd.overlap;
   const oq = dd.onlyQuant;
   const ol = dd.onlyQual;
+  const sell = dd.sellSignals || [];
   let h = '';
+  
+  // ===== 卖点预警 (新增) =====
+  if (sell.length > 0) {
+    h += '<div class="sell-alert"><h3>🔴 卖点预警（' + sell.length + '个）</h3>';
+    h += '<p style="font-size:12px;color:#991b1b;margin-bottom:10px">前期推荐买入的品种<strong>今日出现转跌/资金流出信号</strong>，建议重点关注</p>';
+    h += '<table><thead><tr><th></th><th>指数</th><th>前期状态</th><th>今日份额变化</th><th>今日涨跌</th><th>今日资金流</th><th>卖出理由</th></tr></thead><tbody>';
+    for (const s of sell) {
+      const star = s.wasInOverlap ? '⭐⭐⭐' : '⭐⭐';
+      const badge = s.type === 'both' ? '强烈卖出' : (s.type === 'qual' ? '定性卖出' : '量化卖出');
+      const badgeCls = s.type === 'both' ? 'sell-strong' : 'sell-normal';
+      h += '<tr class="sell-row">';
+      h += '<td><span class="star">' + star + '</span></td>';
+      h += '<td class="name-cell">' + s.name + '<br><span class="code-sub-sm">' + (s.mainCode || '') + '</span></td>';
+      h += '<td>' + (s.wasInOverlap ? '重叠推荐✅' : '量化推荐✅') + '</td>';
+      h += '<td>' + (s.curChg > 0 ? '+' : '') + s.curChg.toFixed(2) + '%</td>';
+      h += '<td>' + (s.curPc > 0 ? '+' : '') + s.curPc.toFixed(2) + '%</td>';
+      h += '<td class="flow-cell sell-flow">' + (s.curFlow > 0 ? '+' : '') + s.curFlow.toFixed(2) + '亿</td>';
+      h += '<td><span class="' + badgeCls + '">' + badge + '</span> ' + s.reasons + '</td>';
+      h += '</tr>';
+    }
+    h += '</tbody></table></div>';
+  }
+  
   if (ov.length > 0) {
     h += '<div class="overlap-box"><h3>🎯 强烈推荐（' + ov.length + '个）</h3><p style="font-size:13px;color:#92400e;margin-bottom:10px">量化回测 + 四象限定性分析 同时确认</p>';
     h += '<table><thead><tr><th></th><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>定性信号</th></tr></thead><tbody>';
     for (const name of ov) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td><span class="star">⭐⭐⭐</span></td><td class="name-cell">' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig.replace(/[^\w\u4e00-\u9fa5]/g,'').trim() + '</td></tr>';
+      h += '<tr><td><span class="star">⭐⭐⭐</span></td><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig.replace(/[^\w\u4e00-\u9fa5]/g,'').trim() + '</td></tr>';
     }
     h += '</tbody></table></div>';
   }
@@ -569,7 +644,7 @@ function renderSummary(date, dd) {
     for (const name of oq.slice(0, 10)) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td>' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>历史同类胜率75%</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>历史同类胜率75%</td></tr>';
     }
     h += '</tbody></table></div>';
   }
@@ -579,7 +654,7 @@ function renderSummary(date, dd) {
     for (const name of ol.slice(0, 10)) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td>' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
     }
     h += '</tbody></table></div>';
   }
@@ -590,7 +665,7 @@ function renderSummary(date, dd) {
   avoid.sort((a,b) => a.flow - b.flow);
   let ah = '';
   for (const r of avoid.slice(0, 10)) {
-    ah += '<tr><td>' + r.name + '</td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig + ' ' + r.desc + '</td></tr>';
+    ah += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig + ' ' + r.desc + '</td></tr>';
   }
   document.getElementById('avoidTbody').innerHTML = ah || '<tr><td colspan="5" style="color:#64748b;text-align:center">暂无回避信号</td></tr>';
 }
