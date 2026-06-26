@@ -91,62 +91,77 @@ with open(CSV_FILE, 'r', encoding='utf-8') as f:
         idx = row['idx']
         if d not in all_data:
             all_data[d] = {}
-        all_data[d][idx] = row
+        if idx not in all_data[d]:
+            all_data[d][idx] = []
+        all_data[d][idx].append(row)
 dates = sorted(all_data.keys())
 today_str = dates[-1] if dates else "2026-06-25"
 
 print(f"读取 {len(dates)} 天数据: {dates}")
 print(f"默认展示日期: {today_str}")
 
-# ========== 分组汇总(按指数+日期) ==========
+# ========== 分组汇总(按指数+日期, 仅保留份额最大ETF) ==========
 def group_by_date(date_str):
-    """对指定日期按指数分组汇总,返回 ranked 列表"""
+    """对指定日期按指数分组, 每个指数只保留份额最大的那只ETF, 返回 ranked 列表"""
     day_data = all_data.get(date_str, {})
-    by_idx = defaultdict(lambda: {'shares':0,'flow':0,'codes':[],'nav':0,'chg_pct':0,'pc':0,
-                                   'turnover':0,'ytd':0,'r1m':0,'stock':'','prlist':'','disc':'',
-                                   'indexChg':'','index1Y':'','isT0':'','volume':0,'ytdMdd':0})
-    for idx_name, row in day_data.items():
-        code = row.get('code','')
-        try:
-            s = float(row.get('shares',0)) / 1e8  # 份→亿份
-            chg = int(row.get('sharesChg',0))
-            nav = float(row.get('nav',0))
-            flow = chg * nav / 1e8  # 亿
-            chg_pct = float(row.get('sharesChgRatio','0').replace('%','')) if row.get('sharesChgRatio','') else 0
-            pc = float(row.get('changePct','0').replace('%','')) if row.get('changePct','') else 0
-            ytd = float(row.get('ytdReturn','0').replace('%','')) if row.get('ytdReturn','') else 0
-            r1m = float(row.get('return1M','0').replace('%','')) if row.get('return1M','') else 0
-            tr = float(row.get('turnoverRate','0').replace('%','')) if row.get('turnoverRate','') else 0
-            vol = float(row.get('turnoverVolume',0)) if row.get('turnoverVolume','') else 0
-            ytdMdd = float(row.get('ytdMaxDrawdown','0').replace('%','')) if row.get('ytdMaxDrawdown','') else 0
-            indexChg = row.get('indexDailyChange','')
-            index1Y = row.get('index1YReturn','')
-            isT0 = row.get('isTPlus0','')
-        except:
-            continue
-        d = by_idx[idx_name]
-        d['shares'] += s
-        d['flow'] += flow
-        d['codes'].append(code)
-        d['nav'] = nav
-        d['chg_pct'] = chg_pct
-        d['pc'] = pc
-        d['ytd'] = ytd
-        d['r1m'] = r1m
-        d['turnover'] = max(d['turnover'], tr)
-        d['volume'] = max(d['volume'], vol)
-        d['stock'] = row.get('stockRatio','')
-        d['prlist'] = row.get('prlistTop20Ratio','')
-        d['disc'] = row.get('disc','')
-        d['indexChg'] = indexChg
-        d['index1Y'] = index1Y
-        d['isT0'] = isT0
-        d['ytdMdd'] = ytdMdd
-        d['main_code'] = code
-        d['idx'] = idx_name
+    # 先全部分组, 再每指数只保留最大份额的ETF
+    groups = defaultdict(list)
+    for idx_name, rows in day_data.items():
+        for row in rows:
+            code = row.get('code','')
+            try:
+                s = float(row.get('shares',0)) / 1e8  # 份→亿份
+                chg = int(row.get('sharesChg',0))
+                nav = float(row.get('nav',0))
+                flow = chg * nav / 1e8  # 亿
+                chg_pct = float(row.get('sharesChgRatio','0').replace('%','')) if row.get('sharesChgRatio','') else 0
+                pc = float(row.get('changePct','0').replace('%','')) if row.get('changePct','') else 0
+                ytd = float(row.get('ytdReturn','0').replace('%','')) if row.get('ytdReturn','') else 0
+                r1m = float(row.get('return1M','0').replace('%','')) if row.get('return1M','') else 0
+                tr = float(row.get('turnoverRate','0').replace('%','')) if row.get('turnoverRate','') else 0
+                vol = float(row.get('turnoverVolume',0)) if row.get('turnoverVolume','') else 0
+                ytdMdd = float(row.get('ytdMaxDrawdown','0').replace('%','')) if row.get('ytdMaxDrawdown','') else 0
+                indexChg = row.get('indexDailyChange','')
+                index1Y = row.get('index1YReturn','')
+                isT0 = row.get('isTPlus0','')
+                groups[idx_name].append({
+                    'code': code, 'shares': s, 'flow': flow, 'nav': nav, 'chg_pct': chg_pct,
+                    'pc': pc, 'ytd': ytd, 'r1m': r1m, 'tr': tr, 'vol': vol, 'ytdMdd': ytdMdd,
+                    'indexChg': indexChg, 'index1Y': index1Y, 'isT0': isT0,
+                    'stock': row.get('stockRatio',''), 'prlist': row.get('prlistTop20Ratio',''),
+                    'disc': row.get('disc',''),
+                })
+            except:
+                continue
+    
+    # 每个指数只保留份额最大的ETF
+    by_idx = {}
+    for idx_name, items in groups.items():
+        items.sort(key=lambda x: -x['shares'])
+        best = items[0]  # 份额最大的ETF
+        d = {
+            'shares': best['shares'],
+            'flow': best['flow'],
+            'codes': [best['code']],
+            'nav': best['nav'],
+            'chg_pct': best['chg_pct'],
+            'pc': best['pc'],
+            'ytd': best['ytd'],
+            'r1m': best['r1m'],
+            'turnover': best['tr'],
+            'volume': best['vol'],
+            'stock': best['stock'],
+            'prlist': best['prlist'],
+            'disc': best['disc'],
+            'indexChg': best['indexChg'],
+            'index1Y': best['index1Y'],
+            'isT0': best['isT0'],
+            'ytdMdd': best['ytdMdd'],
+            'main_code': best['code'],
+            'idx': idx_name,
+        }
+        by_idx[idx_name] = d
     return sorted(by_idx.items(), key=lambda x: x[1]['flow'], reverse=True)
-
-ranked_today = group_by_date(today_str)
 
 # ========== 四象限定性分析 ==========
 def classify(d):
@@ -296,16 +311,17 @@ for d in dates:
 all_flow2_by_code = defaultdict(list)  # code -> [(date, amt, ast)]
 for d in dates:
     day_data = all_data.get(d, {})
-    for idx_name, row in day_data.items():
-        code = row.get('code','')
-        try:
-            sh_chg = int(row.get('sharesChg',0))
-            nav = float(row.get('nav',0))
-            amt = sh_chg * nav  # 申赎金额
-            ast = sh_chg         # 申赎份额
-            all_flow2_by_code[code].append((d, amt, ast))
-        except:
-            pass
+    for idx_name, rows in day_data.items():
+        for row in rows:
+            code = row.get('code','')
+            try:
+                sh_chg = int(row.get('sharesChg',0))
+                nav = float(row.get('nav',0))
+                amt = sh_chg * nav  # 申赎金额
+                ast = sh_chg         # 申赎份额
+                all_flow2_by_code[code].append((d, amt, ast))
+            except:
+                pass
 
 days_collected = len(dates)
 flow2_data = {}
@@ -483,10 +499,6 @@ for bt in BACKTEST:
 html += """</tbody></table>
   </div>
   
-  <div class="section-title" style="margin-top:24px">📊 市场基准统计 — 当前推荐是否相对强势？</div>
-  <div class="section-sub">通过全市场资金流和份额变化的极值/中位数/均值，判断推荐标的在全市场中的相对位置</div>
-  <div id="marketStatsPanel"></div>
-  
   <h4 style="margin:20px 0 8px">量化回测筛选结果（条件: 份额↑0.5%~3% + 价格↑ + 资金流入正）</h4>
   <p style="font-size:11px;color:#64748b;margin:-4px 0 8px">🟢=资金流高于全市场中位数 🔴=低于中位数</p>
   <div class="backtest-box">
@@ -506,6 +518,8 @@ html += """</tbody></table>
 <div id="tab-summary" class="tab-content">
   <div class="section-title" style="color:#92400e">🎯 最终结论 — 量化和定性重叠推荐</div>
   <div class="section-sub">两套独立方法论同时选出的ETF, 置信度最高</div>
+  <div id="marketStatsPanel" style="display:block"></div>
+  <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
   <div id="summaryContent"></div>
   <div class="footnote">
   <b>分析方法说明:</b><br>

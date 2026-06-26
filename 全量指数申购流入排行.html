@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ETF申购流入全面分析 - 2026-06-25</title>
+<title>ETF申购流入全面分析 - 2026-06-26</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -76,7 +76,7 @@ tr:hover{background:#f8fafc!important}
 
 <div class="header">
   <h1>🏦 全市场ETF申购流入全面分析</h1>
-  <p>覆盖2个交易日 · 2个指数ETF · 39列全字段 · 支持日期切换查看历史</p>
+  <p>覆盖3个交易日 · 3个指数ETF · 39列全字段 · 支持日期切换查看历史</p>
 </div>
 
 <div class="nav-tabs">
@@ -88,7 +88,7 @@ tr:hover{background:#f8fafc!important}
 
 <div class="controls" style="background:#f1f5f9;padding:10px 28px;border-bottom:1px solid #e2e8f0">
   <label style="font-size:12px;font-weight:500;color:#475569">📅 选择日期:</label>
-  <select id="datePicker" onchange="switchDate(this.value)" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-weight:500"><option value="2026-06-24">2026-06-24</option><option value="2026-06-25" selected>2026-06-25</option></select>
+  <select id="datePicker" onchange="switchDate(this.value)" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-weight:500"><option value="2026-06-24">2026-06-24</option><option value="2026-06-25">2026-06-25</option><option value="2026-06-26" selected>2026-06-26</option></select>
   <span id="dateInfo" style="font-size:12px;color:#64748b;margin-left:6px"></span>
 </div>
 
@@ -145,10 +145,6 @@ tr:hover{background:#f8fafc!important}
 <tr><td>↑1%~3%</td><td>20</td><td>+12.92%</td><td>75%</td><td>⭐⭐⭐ 最强信号</td></tr><tr><td>↑0%~1%</td><td>9</td><td>+0.87%</td><td>100%</td><td>⭐⭐ 有效</td></tr><tr><td>↑>5%</td><td>135</td><td>-1.09%</td><td>39.5%</td><td>⚠️ 不稳</td></tr><tr><td>↑3%~5%</td><td>13</td><td>-0.39%</td><td>25%</td><td>⭐ 弱信号</td></tr><tr><td>↓0%~-1%</td><td>9</td><td>-0.79%</td><td>0%</td><td>⚠️ 看空</td></tr><tr><td>↓-1%~-3%</td><td>22</td><td>+1.47%</td><td>75%</td><td>信号不稳</td></tr><tr><td>↓-3%~-5%</td><td>12</td><td>-1.92%</td><td>0%</td><td>⚠️ 可靠看空</td></tr><tr><td>↓<-5%</td><td>153</td><td>+1.29%</td><td>72.7%</td><td>信号不稳</td></tr></tbody></table>
   </div>
   
-  <div class="section-title" style="margin-top:24px">📊 市场基准统计 — 当前推荐是否相对强势？</div>
-  <div class="section-sub">通过全市场资金流和份额变化的极值/中位数/均值，判断推荐标的在全市场中的相对位置</div>
-  <div id="marketStatsPanel"></div>
-  
   <h4 style="margin:20px 0 8px">量化回测筛选结果（条件: 份额↑0.5%~3% + 价格↑ + 资金流入正）</h4>
   <p style="font-size:11px;color:#64748b;margin:-4px 0 8px">🟢=资金流高于全市场中位数 🔴=低于中位数</p>
   <div class="backtest-box">
@@ -168,6 +164,8 @@ tr:hover{background:#f8fafc!important}
 <div id="tab-summary" class="tab-content">
   <div class="section-title" style="color:#92400e">🎯 最终结论 — 量化和定性重叠推荐</div>
   <div class="section-sub">两套独立方法论同时选出的ETF, 置信度最高</div>
+  <div id="marketStatsPanel" style="display:block"></div>
+  <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
   <div id="summaryContent"></div>
   <div class="footnote">
   <b>分析方法说明:</b><br>
@@ -189,7 +187,7 @@ tr:hover{background:#f8fafc!important}
 // HTML 不内置任何数据, 页面启动时自动 fetch
 // 数据更新后重新运行 gen_analysis_html.py 即可, 浏览器刷新即得最新
 let ALL_DATA = {};
-let currentDate = '2026-06-25';
+let currentDate = '2026-06-26';
 
 function init() {
   // 从相对路径加载数据JSON (与HTML同服务器的etf_history/etf_data.json)
@@ -199,7 +197,7 @@ function init() {
       ALL_DATA = data.dates;
       ALL_DATA._meta = data;  // stockFlow等元数据
       const keys = Object.keys(ALL_DATA).sort();
-      currentDate = keys.pop() || '2026-06-25';
+      currentDate = keys.pop() || '2026-06-26';
       document.getElementById('datePicker').value = currentDate;
       renderStockFlowStatus();
       if (document.querySelector('#tab-rank.active')) {
