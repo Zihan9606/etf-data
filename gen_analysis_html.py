@@ -263,6 +263,17 @@ for d in dates:
             'type': sell_type,
         })
     
+    # ===== 市场基准统计 =====
+    flows = sorted([d['flow'] for _, d in by_idx.items()])
+    chgs = sorted([d['chg_pct'] for _, d in by_idx.items()])
+    n = len(flows)
+    median_flow = flows[n//2] if n > 0 else 0
+    median_chg = chgs[n//2] if n > 0 else 0
+    avg_flow = sum(flows)/n if n > 0 else 0
+    avg_chg = sum(chgs)/n if n > 0 else 0
+    top3_flow = sorted(by_idx.items(), key=lambda x: x[1]['flow'], reverse=True)[:3]
+    top3_chg = sorted(by_idx.items(), key=lambda x: x[1]['chg_pct'], reverse=True)[:3]
+    
     all_dates_json[d] = {
         'data': date_data,
         'inflow': inf, 'outflow': outf, 'flat': fl, 'total': len(ranked),
@@ -270,7 +281,41 @@ for d in dates:
         'onlyQuant': sorted(oq, key=lambda x: by_idx[x]['flow'], reverse=True)[:10],
         'onlyQual': sorted(ol, key=lambda x: by_idx[x]['flow'], reverse=True)[:10],
         'sellSignals': sorted(sell_signals, key=lambda x: x['curFlow']),
+        'marketStats': {
+            'top3Flow': [{'name':n,'flow':round(d['flow'],2),'mainCode':d.get('main_code','')} for n,d in top3_flow],
+            'top3Chg': [{'name':n,'chg':round(d['chg_pct'],2),'mainCode':d.get('main_code','')} for n,d in top3_chg],
+            'medianFlow': round(median_flow,2),
+            'medianChg': round(median_chg,2),
+            'avgFlow': round(avg_flow,2),
+            'avgChg': round(avg_chg,2),
+        },
     }
+
+# ===== stock_flow2 因子分析框架 =====
+# 计算每个ETF累计N天的 sharesChg * nav (金额) 和 sharesChg (份额) 的5日均值
+all_flow2_by_code = defaultdict(list)  # code -> [(date, amt, ast)]
+for d in dates:
+    day_data = all_data.get(d, {})
+    for idx_name, row in day_data.items():
+        code = row.get('code','')
+        try:
+            sh_chg = int(row.get('sharesChg',0))
+            nav = float(row.get('nav',0))
+            amt = sh_chg * nav  # 申赎金额
+            ast = sh_chg         # 申赎份额
+            all_flow2_by_code[code].append((d, amt, ast))
+        except:
+            pass
+
+days_collected = len(dates)
+flow2_data = {}
+for code, vals in all_flow2_by_code.items():
+    if len(vals) >= 5:
+        sorted_vals = sorted(vals, key=lambda x: x[0])[-5:]  # 最近5天
+        amt_ma5 = sum(v[1] for v in sorted_vals) / 5
+        ast_ma5 = sum(v[2] for v in sorted_vals) / 5
+        flow2_data[code] = {'amt_ma5': round(amt_ma5, 2), 'ast_ma5': round(ast_ma5, 2)}
+stockFlowReady = days_collected >= 5
 
 # 回测数据
 BACKTEST = [
@@ -437,11 +482,24 @@ for bt in BACKTEST:
     html += f"<tr><td>{bt[0]}</td><td>{bt[1]}</td><td>{bt[2]}</td><td>{bt[3]}</td><td>{bt[4]}</td></tr>"
 html += """</tbody></table>
   </div>
+  
+  <div class="section-title" style="margin-top:24px">📊 市场基准统计 — 当前推荐是否相对强势？</div>
+  <div class="section-sub">通过全市场资金流和份额变化的极值/中位数/均值，判断推荐标的在全市场中的相对位置</div>
+  <div id="marketStatsPanel"></div>
+  
   <h4 style="margin:20px 0 8px">量化回测筛选结果（条件: 份额↑0.5%~3% + 价格↑ + 资金流入正）</h4>
+  <p style="font-size:11px;color:#64748b;margin:-4px 0 8px">🟢=资金流高于全市场中位数 🔴=低于中位数</p>
   <div class="backtest-box">
   <table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>同类历史胜率</th></tr></thead><tbody id="quantRecomTbody">
   </tbody></table>
   </div>
+  
+  <div class="section-title" style="margin-top:24px">📐 stock_flow2 因子分析（广发证券IC 5.5-6.0%）</div>
+  <div class="section-sub">基于日频份额变化的5日均值因子, stock_flow2amt_ma5(金额) + stock_flow2ast_ma5(份额)</div>
+  <div id="stockFlowPanel">
+    <div style="padding:20px;text-align:center;color:#64748b">⏳ 加载中...</div>
+  </div>
+  
   <div class="footnote">关键发现: 份额↑1%~3%是历史最强信号(+12.92%均值, 75%胜率)。份额↓-3%~-5%是可靠看空信号(0%胜率)。份额↑>5%反而平均亏损(-1.09%), 说明极端份额变化不可简单看涨。</div>
 </div>
 
@@ -476,9 +534,12 @@ function init() {
   fetch('etf_history/etf_data.json?_t=' + Date.now())
     .then(r => r.json())
     .then(data => {
-      ALL_DATA = data;
-      currentDate = Object.keys(ALL_DATA).sort().pop() || '""" + today_str + """';
+      ALL_DATA = data.dates;
+      ALL_DATA._meta = data;  // stockFlow等元数据
+      const keys = Object.keys(ALL_DATA).sort();
+      currentDate = keys.pop() || '""" + today_str + """';
       document.getElementById('datePicker').value = currentDate;
+      renderStockFlowStatus();
       if (document.querySelector('#tab-rank.active')) {
         switchDate(currentDate);
       }
@@ -513,6 +574,7 @@ function renderAll(date) {
   renderTable(date, dd);
   renderQual(date, dd);
   renderQuant(date, dd);
+  renderMarketStats(dd);
   renderSummary(date, dd);
   updateStats(dd);
   filt();
@@ -585,14 +647,89 @@ function renderQual(date, dd) {
 
 function renderQuant(date, dd) {
   const qb = dd.onlyQuant;
+  const ms = dd.marketStats;
   const tb = document.getElementById('quantRecomTbody');
   let h = '';
   for (const name of qb) {
     const r = dd.data.find(x => x.name === name);
     if (!r) continue;
-    h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td></tr>';
+    const vsMedian = ms && r.flow > ms.medianFlow ? '🟢' : (ms && r.flow < ms.medianFlow ? '🔴' : '');
+    h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + vsMedian + ' ' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td></tr>';
   }
   tb.innerHTML = h || '<tr><td colspan="5" style="color:#64748b;text-align:center">当前日期无符合条件的量化推荐</td></tr>';
+}
+
+// ===== 市场基准统计 =====
+function renderMarketStats(dd) {
+  const ms = dd.marketStats;
+  if (!ms) return;
+  let h = '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px">';
+  
+  // 前三资金流入
+  h += '<div class="backtest-box" style="margin:0">';
+  h += '<h5 style="font-size:13px;margin-bottom:8px">🏆 资金流入 Top3</h5><table style="font-size:11px">';
+  for (const item of ms.top3Flow) {
+    h += '<tr><td style="padding:2px 4px" class="name-cell">' + item.name + '<br><span class="code-sub-sm">' + (item.mainCode || '') + '</span></td><td style="padding:2px 4px;font-weight:600;color:#166534">+' + item.flow + '亿</td></tr>';
+  }
+  h += '</table></div>';
+  
+  // 前三份额增长
+  h += '<div class="backtest-box" style="margin:0">';
+  h += '<h5 style="font-size:13px;margin-bottom:8px">🏆 份额增长 Top3</h5><table style="font-size:11px">';
+  for (const item of ms.top3Chg) {
+    h += '<tr><td style="padding:2px 4px" class="name-cell">' + item.name + '<br><span class="code-sub-sm">' + (item.mainCode || '') + '</span></td><td style="padding:2px 4px;font-weight:600;color:#166534">+' + item.chg + '%</td></tr>';
+  }
+  h += '</table></div>';
+  
+  // 中位数 + 平均数
+  h += '<div class="backtest-box" style="margin:0">';
+  h += '<h5 style="font-size:13px;margin-bottom:8px">📊 全市场中位数</h5>';
+  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">资金流:</span> <strong>' + (ms.medianFlow > 0 ? '+' : '') + ms.medianFlow + '亿</strong></div>';
+  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">份额变化率:</span> <strong>' + (ms.medianChg > 0 ? '+' : '') + ms.medianChg + '%</strong></div>';
+  h += '</div>';
+  
+  h += '<div class="backtest-box" style="margin:0">';
+  h += '<h5 style="font-size:13px;margin-bottom:8px">📊 全市场均值</h5>';
+  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">资金流:</span> <strong>' + (ms.avgFlow > 0 ? '+' : '') + ms.avgFlow + '亿</strong></div>';
+  h += '<div style="font-size:12px;padding:4px 8px"><span style="color:#64748b">份额变化率:</span> <strong>' + (ms.avgChg > 0 ? '+' : '') + ms.avgChg + '%</strong></div>';
+  h += '</div>';
+  
+  h += '</div>';
+  h += '<div style="font-size:11px;color:#94a3b8;margin:-8px 0 16px">💡 推荐标的资金流/份额变化若高于中位数和均值, 说明在全市场中相对强势。低于则需谨慎。</div>';
+  
+  const panel = document.getElementById('marketStatsPanel');
+  if (panel) panel.innerHTML = h;
+}
+
+// ===== stock_flow2 因子 =====
+function renderStockFlowStatus() {
+  const meta = ALL_DATA._meta;
+  if (!meta || !meta.stockFlow) return;
+  const sf = meta.stockFlow;
+  let h = '';
+  if (sf.ready) {
+    h += '<div style="padding:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px">';
+    h += '<h5 style="font-size:14px;color:#166534">✅ stock_flow2 因子可计算! (已采集' + sf.daysCollected + '天)</h5>';
+    h += '<table style="font-size:11px;margin-top:8px"><thead><tr><th>指数</th><th>amt_ma5(元)</th><th>ast_ma5(份)</th></tr></thead><tbody>';
+    const sorted = Object.entries(sf.data).sort((a,b) => Math.abs(b[1].amt_ma5) - Math.abs(a[1].amt_ma5));
+    for (const [code, val] of sorted.slice(0, 20)) {
+      h += '<tr><td class="name-cell">' + code + '</td><td>' + val.amt_ma5.toLocaleString() + '</td><td>' + val.ast_ma5.toLocaleString() + '</td></tr>';
+    }
+    h += '</tbody></table></div>';
+  } else {
+    const daysLeft = sf.neededDays - sf.daysCollected;
+    const pct = Math.round(sf.daysCollected / sf.neededDays * 100);
+    h += '<div style="padding:20px;background:#fefce8;border:1px solid #facc15;border-radius:8px;text-align:center">';
+    h += '<div style="font-size:28px;font-weight:600;color:#92400e">' + sf.daysCollected + '/' + sf.neededDays + '</div>';
+    h += '<div style="font-size:13px;color:#92400e;margin:6px 0">日频数据采集中, 还需 ' + daysLeft + ' 个交易日</div>';
+    h += '<div style="width:200px;height:8px;background:#fef9c3;border-radius:4px;margin:8px auto;overflow:hidden">';
+    h += '<div style="height:100%;width:' + pct + '%;background:#f59e0b;border-radius:4px"></div></div>';
+    h += '<div style="font-size:11px;color:#a16207">stock_flow2amt_ma5(申赎金额5日均值) + stock_flow2ast_ma5(申赎份额5日均值)</div>';
+    h += '<div style="font-size:11px;color:#a16207;margin-top:4px">累计5天后自动开始计算, 广发证券IC 5.5-6.0%</div>';
+    h += '</div>';
+  }
+  const panel = document.getElementById('stockFlowPanel');
+  if (panel) panel.innerHTML = h;
 }
 
 function renderSummary(date, dd) {
@@ -721,9 +858,22 @@ with open(HTML_FILE, 'w', encoding='utf-8') as f:
     f.write(html)
 
 # 导出数据JSON (供HTML fetch加载)
+export = {
+    'dates': all_dates_json,
+    'stockFlow': {
+        'daysCollected': days_collected,
+        'neededDays': 5,
+        'ready': stockFlowReady,
+        'data': flow2_data if stockFlowReady else {},
+    }
+}
 with open(DATA_JSON, 'w', encoding='utf-8') as f:
-    json.dump(all_dates_json, f, ensure_ascii=False)
+    json.dump(export, f, ensure_ascii=False)
 print(f"✅ 已生成: {HTML_FILE} ({len(html)} bytes)")
-print(f"✅ 已导出: {DATA_JSON} ({len(json.dumps(all_dates_json))} bytes)")
+print(f"✅ 已导出: {DATA_JSON} ({len(json.dumps(export))} bytes)")
 print(f"   数据与HTML分离: 含 {len(dates)} 个交易日")
+if stockFlowReady:
+    print(f"   🎯 stock_flow2_ma5 因子可计算! {days_collected}天数据充足")
+else:
+    print(f"   ⏳ stock_flow2_ma5 还需 {5-days_collected} 天数据")
 print(f"   使用方式: 启动 server.py 后通过 HTTP 访问, 支持日期切换")
