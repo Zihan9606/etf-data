@@ -17,13 +17,13 @@ WATCH_FILE = os.path.join(DIR, "etf_history", "watchlist.json")
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/api/watchlist':
+        if self.path.endswith('/api/watchlist'):
             self._serve_watchlist()
         else:
             self._serve_static()
 
     def do_POST(self):
-        if self.path == '/api/watchlist':
+        if self.path.endswith('/api/watchlist'):
             self._save_watchlist()
         else:
             self.send_error(404)
