@@ -222,45 +222,46 @@ for d in dates:
         }
         date_data.append(entry)
     
-    # 卖点信号: 对比前一日推荐, 看今日是否转坏
+    # 卖点信号: 直接用当日分析结果 = 当日回避清单
+    # 触发条件: 定性(出货/恐慌) + 量化(资金流出>1亿) 
     sell_signals = []
-    if d != dates[0]:
-        prev_d = dates[dates.index(d) - 1]
-        prev_data = all_dates_json.get(prev_d, {})
-        prev_overlap = prev_data.get('overlap', [])
-        prev_quant = prev_data.get('onlyQuant', [])
-        prev_all_buys = set(list(prev_overlap) + list(prev_quant))
-        prev_qual_buys = prev_data.get('onlyQual', [])
-        
-        for prev_buy in prev_all_buys:
-            if prev_buy in by_idx:
-                cur = by_idx[prev_buy]
-                cur_flow = cur['flow']
-                cur_sig, _ = qual_sig.get(prev_buy, ('', ''))
-                is_danger = any(k in cur_sig for k in ['出货','恐慌'])
-                
-                reasons = []
-                sell_type = ''
-                if cur_flow < -1:
-                    reasons.append(f"资金流出{cur_flow:.2f}亿")
-                    sell_type = 'quant'
-                if is_danger:
-                    reasons.append(f"定性信号: {cur_sig.strip().split(' ')[0]}")
-                    sell_type = 'both' if sell_type == 'quant' else 'qual'
-                
-                if reasons:
-                    sell_signals.append({
-                        'name': prev_buy,
-                        'mainCode': by_idx[prev_buy].get('main_code',''),
-                        'prevFlow': prev_data.get('data',[])[0].get('flow',0) if prev_data.get('data') else 0,
-                        'curFlow': round(cur_flow,2),
-                        'curChg': round(cur['chg_pct'],2),
-                        'curPc': round(cur['pc'],2),
-                        'sig': cur_sig,
-                        'reasons': '; '.join(reasons),
-                        'type': sell_type,
-                        'wasInOverlap': prev_buy in prev_overlap,
-                    })
+    # 出货+恐慌组
+    avoid_names = set()
+    for idx_name, _ in qual_sig.items():
+        sig, _ = qual_sig.get(idx_name, ('', ''))
+        if any(k in sig for k in ['出货','恐慌']):
+            avoid_names.add(idx_name)
+    # 大额流出组
+    for idx_name, cur in by_idx.items():
+        if cur['flow'] < -5:
+            avoid_names.add(idx_name)
+    
+    for idx_name in avoid_names:
+        cur = by_idx[idx_name]
+        cur_flow = cur['flow']
+        cur_sig, _ = qual_sig.get(idx_name, ('', ''))
+        is_danger = any(k in cur_sig for k in ['出货','恐慌'])
+        reasons = []
+        sell_type = ''
+        if cur_flow < -1:
+            reasons.append(f"资金流出{cur_flow:.2f}亿")
+            sell_type = 'quant'
+        if is_danger:
+            reasons.append(f"定性信号: {cur_sig.strip().split(' ')[0]}")
+            sell_type = 'both' if sell_type == 'quant' else 'qual'
+        if not reasons:
+            reasons.append(f"大额流出{cur_flow:.2f}亿")
+            sell_type = 'quant'
+        sell_signals.append({
+            'name': idx_name,
+            'mainCode': cur.get('main_code',''),
+            'curFlow': round(cur_flow,2),
+            'curChg': round(cur['chg_pct'],2),
+            'curPc': round(cur['pc'],2),
+            'sig': cur_sig,
+            'reasons': '; '.join(reasons),
+            'type': sell_type,
+        })
     
     all_dates_json[d] = {
         'data': date_data,
@@ -448,17 +449,12 @@ html += """</tbody></table>
   <div class="section-title" style="color:#92400e">🎯 最终结论 — 量化和定性重叠推荐</div>
   <div class="section-sub">两套独立方法论同时选出的ETF, 置信度最高</div>
   <div id="summaryContent"></div>
-  <h4 style="margin:20px 0 8px">⚠️ 回避清单</h4>
-  <div class="backtest-box" style="border-left-color:#ef4444">
-  <table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>风险信号</th></tr></thead><tbody id="avoidTbody">
-  </tbody></table></div>
   <div class="footnote">
   <b>分析方法说明:</b><br>
   ① <b>定性分析</b>: 基于"份额×价格"四象限矩阵, 判断主力资金意图。来源: 券商研究报告框架。<br>
   ② <b>量化分析</b>: 基于127个ETF的373个季度变化样本, 回测各份额变化区间的后续价格表现。数据源: 天天基金季度报告+westockdata K线。<br>
   ③ <b>重叠推荐</b>: 两套方法同时选出的ETF, 置信度最高。定性看资金意图, 量化看历史统计。<br>
-  ④ <b>局限性</b>: 份额数据为季度频率(每年4次), 非日频。真正日频量化模型需要连续采集3-6个月。
-  </div>
+  ④ <b>卖点预警</b>: 当日出现"出货嫌疑/恐慌出逃/大额流出"的品种, 建议回避或卖出。</div>
 </div>
 
 <div id="tipOverlay" class="tip-overlay" onclick="this.classList.remove('show')">
@@ -606,27 +602,27 @@ function renderSummary(date, dd) {
   const sell = dd.sellSignals || [];
   let h = '';
   
-  // ===== 卖点预警 (新增) =====
+  // ===== 卖点预警（原回避清单） =====
+  h += '<div class="sell-alert"><h3>🔴 卖点预警' + (sell.length > 0 ? '（' + sell.length + '个）' : '（当前无信号）') + '</h3>';
+  h += '<p style="font-size:12px;color:#991b1b;margin-bottom:10px">以下指数今日出现<strong>出货嫌疑/恐慌出逃/大额资金流出</strong>，建议回避或卖出</p>';
   if (sell.length > 0) {
-    h += '<div class="sell-alert"><h3>🔴 卖点预警（' + sell.length + '个）</h3>';
-    h += '<p style="font-size:12px;color:#991b1b;margin-bottom:10px">前期推荐买入的品种<strong>今日出现转跌/资金流出信号</strong>，建议重点关注</p>';
-    h += '<table><thead><tr><th></th><th>指数</th><th>前期状态</th><th>今日份额变化</th><th>今日涨跌</th><th>今日资金流</th><th>卖出理由</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>风险信号</th></tr></thead><tbody>';
     for (const s of sell) {
-      const star = s.wasInOverlap ? '⭐⭐⭐' : '⭐⭐';
       const badge = s.type === 'both' ? '强烈卖出' : (s.type === 'qual' ? '定性卖出' : '量化卖出');
       const badgeCls = s.type === 'both' ? 'sell-strong' : 'sell-normal';
       h += '<tr class="sell-row">';
-      h += '<td><span class="star">' + star + '</span></td>';
       h += '<td class="name-cell">' + s.name + '<br><span class="code-sub-sm">' + (s.mainCode || '') + '</span></td>';
-      h += '<td>' + (s.wasInOverlap ? '重叠推荐✅' : '量化推荐✅') + '</td>';
       h += '<td>' + (s.curChg > 0 ? '+' : '') + s.curChg.toFixed(2) + '%</td>';
       h += '<td>' + (s.curPc > 0 ? '+' : '') + s.curPc.toFixed(2) + '%</td>';
       h += '<td class="flow-cell sell-flow">' + (s.curFlow > 0 ? '+' : '') + s.curFlow.toFixed(2) + '亿</td>';
       h += '<td><span class="' + badgeCls + '">' + badge + '</span> ' + s.reasons + '</td>';
       h += '</tr>';
     }
-    h += '</tbody></table></div>';
+    h += '</tbody></table>';
+  } else {
+    h += '<p style="font-size:13px;color:#166534;padding:12px 0;margin:0">✅ 今日未检测到明显的卖出/回避信号，市场整体健康。</p>';
   }
+  h += '</div>';
   
   if (ov.length > 0) {
     h += '<div class="overlap-box"><h3>🎯 强烈推荐（' + ov.length + '个）</h3><p style="font-size:13px;color:#92400e;margin-bottom:10px">量化回测 + 四象限定性分析 同时确认</p>';
@@ -659,15 +655,6 @@ function renderSummary(date, dd) {
     h += '</tbody></table></div>';
   }
   document.getElementById('summaryContent').innerHTML = h;
-  
-  // 回避清单
-  const avoid = dd.data.filter(r => r.sig.includes('出货') || r.sig.includes('恐慌') || (r.flow < -5));
-  avoid.sort((a,b) => a.flow - b.flow);
-  let ah = '';
-  for (const r of avoid.slice(0, 10)) {
-    ah += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig + ' ' + r.desc + '</td></tr>';
-  }
-  document.getElementById('avoidTbody').innerHTML = ah || '<tr><td colspan="5" style="color:#64748b;text-align:center">暂无回避信号</td></tr>';
 }
 
 function switchTab(id) {
