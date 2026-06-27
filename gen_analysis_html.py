@@ -95,6 +95,9 @@ with open(CSV_FILE, 'r', encoding='utf-8') as f:
             all_data[d][idx] = []
         all_data[d][idx].append(row)
 dates = sorted(all_data.keys())
+# 过滤掉周末日期（交易日是周一到周五）
+import datetime as dtmd
+dates = [d for d in dates if dtmd.datetime.strptime(d, "%Y-%m-%d").weekday() < 5]
 today_str = dates[-1] if dates else "2026-06-25"
 
 print(f"读取 {len(dates)} 天数据: {dates}")
