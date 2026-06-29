@@ -7,7 +7,28 @@
   - 使用方式: cd工作目录 && python3 server.py → 浏览器打开 localhost:8080
   - 好处: 数据更新后只需重新运行本脚本, HTML自动读取新数据, 无需改HTML
 """
-import subprocess, json, os, csv
+import subprocess, json, os, csv, sys
+
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# === 前置: 自动更新股东数据和QDII数据 ===
+print("📋 自动更新股东数据...")
+sh_script = os.path.join(SCRIPTS_DIR, "collect_shareholders.py")
+if os.path.exists(sh_script):
+    r = subprocess.run([sys.executable, sh_script], capture_output=True, text=True, timeout=120)
+    for line in r.stdout.strip().split('\n')[-5:]:
+        print(f"  {line}")
+    if r.returncode != 0:
+        print(f"  ⚠️ 股东采集异常: {r.stderr[:100]}")
+
+print("📄 自动更新QDII数据...")
+qdii_script = os.path.join(SCRIPTS_DIR, "collect_qdii.py")
+if os.path.exists(qdii_script):
+    r = subprocess.run([sys.executable, qdii_script], capture_output=True, text=True, timeout=60)
+    for line in r.stdout.strip().split('\n')[-3:]:
+        print(f"  {line}")
+    if r.returncode != 0:
+        print(f"  ⚠️ QDII采集异常: {r.stderr[:100]}")
 from collections import defaultdict
 
 OUTPUT_DIR = "/Users/andy/WorkBuddy/2026-06-24-23-34-24/etf_history"
