@@ -82,6 +82,7 @@ def fetch_qdii():
         'totalOrgs': len(records),
         'latestApproveDate': latest_date,
         'latestApproved': latest_approved,
+        'allRecords': records,  # 全量记录用于下次对比
     }
     
     print(f"📊 QDII数据: {report_date}")
@@ -100,20 +101,40 @@ if current:
         with open(QDII_FILE, 'r') as f:
             last_data = json.load(f)
     
-    # 对比变化
-    if last_data and 'latestApproveDate' in last_data:
-        old_date = last_data['latestApproveDate']
-        new_date = current['latestApproveDate']
-        if new_date != old_date:
-            print(f"🚀 有新批准! 上次: {old_date}, 本次: {new_date}")
-            current['newSinceLastCheck'] = True
+    # 对比变化: 比较机构名单和额度变动
+    if last_data and 'allRecords' in last_data:
+        old_records = {r['name']: r for r in last_data['allRecords']}
+        new_records = {r['name']: r for r in records}
+        
+        new_orgs = []  # 新出现的机构
+        quota_up = []  # 额度增加的机构
+        for name, nr in new_records.items():
+            if name not in old_records:
+                new_orgs.append(nr)
+            else:
+                old_q = old_records[name].get('quota', 0)
+                if nr['quota'] > old_q:
+                    quota_up.append({'name': name, 'oldQuota': old_q, 'newQuota': nr['quota'], 'increase': nr['quota'] - old_q})
+        
+        current['newOrgs'] = new_orgs
+        current['quotaIncrease'] = quota_up
+        current['newSinceLastCheck'] = len(new_orgs) > 0 or len(quota_up) > 0
+        
+        if current['newSinceLastCheck']:
+            print(f"🚀 有变化! 新机构{len(new_orgs)}家, 额度提升{len(quota_up)}家")
+            if new_orgs:
+                for o in new_orgs[:5]:
+                    print(f"  ✨ {o['name']} 额度{o['quota']}亿美元")
+            if quota_up:
+                for q in quota_up[:5]:
+                    print(f"  📈 {q['name']}: {q['oldQuota']}→{q['newQuota']}亿 (+{q['increase']}亿)")
         else:
-            print(f"⏸️ 无新批准 (与上次相同: {old_date})")
-            current['newSinceLastCheck'] = False
-        current['lastCheckDate'] = old_date
+            print(f"⏸️ 无变化, 机构名单和额度与上次相同")
     else:
+        current['newOrgs'] = []
+        current['quotaIncrease'] = []
         current['newSinceLastCheck'] = False
-        current['lastCheckDate'] = ''
+        print("📋 首次采集, 跳过对比")
     
     current['fetchedAt'] = datetime.date.today().strftime("%Y-%m-%d")
     

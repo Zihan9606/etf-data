@@ -863,10 +863,11 @@ function renderSummary(date, dd) {
   if (qdii && qdii.totalQuota) {
     let qHtml = '';
     const isNew = qdii.newSinceLastCheck;
+    const newOrgs = qdii.newOrgs || [];
+    const quotaUp = qdii.quotaIncrease || [];
     if (isNew) {
       qHtml += '<div class="sell-alert" style="border-left-color:#2563eb;margin-bottom:16px">';
-      qHtml += '<h3 style="color:#2563eb">🚀 QDII新额度获批！</h3>';
-      qHtml += '<p style="font-size:12px;color:#1e40af">截至' + qdii.reportDate + '，有' + qdii.latestApproved.length + '家机构新获QDII额度，可关注相关基金产品</p>';
+      qHtml += '<h3 style="color:#2563eb">🚀 QDII有新变化！</h3>';
     } else {
       qHtml += '<div class="backtest-box" style="margin-bottom:16px;border-left:4px solid #3b82f6">';
       qHtml += '<h4 style="font-size:13px;margin:0 0 6px">📊 QDII投资额度概况</h4>';
@@ -884,10 +885,19 @@ function renderSummary(date, dd) {
       }
       qHtml += '</div>';
     }
-    if (isNew && qdii.latestApproved) {
+    if (isNew) {
       qHtml += '<div style="margin-top:8px;font-size:11px">';
-      for (const a of qdii.latestApproved.slice(0, 10)) {
-        qHtml += '<span style="display:inline-block;padding:2px 8px;background:#eff6ff;border-radius:4px;margin:2px">' + a.name + ' +' + a.quota + '亿</span> ';
+      if (newOrgs.length > 0) {
+        qHtml += '<div style="font-weight:500;margin-bottom:4px">✨ 新晋机构 (' + newOrgs.length + '家):</div>';
+        for (const a of newOrgs.slice(0, 10)) {
+          qHtml += '<span style="display:inline-block;padding:2px 8px;background:#eff6ff;border-radius:4px;margin:2px">' + a.name + ' ' + a.quota + '亿</span> ';
+        }
+      }
+      if (quotaUp.length > 0) {
+        qHtml += '<div style="font-weight:500;margin-top:6px;margin-bottom:4px">📈 额度提升 (' + quotaUp.length + '家):</div>';
+        for (const q of quotaUp.slice(0, 5)) {
+          qHtml += '<span style="display:inline-block;padding:2px 8px;background:#fefce8;border-radius:4px;margin:2px">' + q.name + ' ' + q.oldQuota + '→' + q.newQuota + '亿 (+' + q.increase + '亿)</span> ';
+        }
       }
       qHtml += '</div>';
     }
@@ -1150,32 +1160,68 @@ function renderShareholders() {
 
   let h = '';
 
-  // 事件提醒
-  if (sh.alerts && sh.alerts.length > 0) {
-    h += '<div class="sell-alert"><h3>🚨 重要股东变动 (' + sh.alerts.length + '条)</h3>';
-    h += '<table><thead><tr><th>类型</th><th>股票</th><th>股东</th><th>分类</th><th>变动</th></tr></thead><tbody>';
-    for (const a of sh.alerts) {
-      h += '<tr><td><span class="dir-badge dir-in">' + a.type + '</span></td><td><code>' + a.stock + '</code></td><td>' + a.holder + '</td><td>' + a.category + '</td><td>' + a.change + '</td></tr>';
-    }
-    h += '</tbody></table></div>';
+  // 筛选栏
+  const allDirections = ['全部', '增持', '减持', '持平', '新进'];
+  const allCategories = ['全部', '社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '其他'];
+  h += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">';
+  h += '<label style="font-size:12px;color:#475569">股东类型:</label>';
+  h += '<select id="shCatFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
+  for (const c of allCategories) h += '<option value="' + c + '">' + c + '</option>';
+  h += '</select>';
+  h += '<label style="font-size:12px;color:#475569;margin-left:8px">变动方向:</label>';
+  h += '<select id="shDirFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
+  for (const d of allDirections) h += '<option value="' + d + '">' + d + '</option>';
+  h += '</select>';
+  // 历史季度选择
+  const quarters = sh.history ? Object.keys(sh.history).sort().reverse() : [];
+  if (quarters.length > 0) {
+    h += '<label style="font-size:12px;color:#475569;margin-left:8px">数据季度:</label>';
+    h += '<select id="shQuarterFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
+    for (const q of quarters) h += '<option value="' + q + '">' + q + '</option>';
+    h += '</select>';
+    h += '<span style="font-size:11px;color:#94a3b8">共' + quarters.length + '个季度</span>';
   }
+  h += '</div>';
 
-  // 按股东类型分组显示
-  const byCat = {};
-  for (const [code, holders] of Object.entries(sh.shareholders)) {
-    for (const hh of holders) {
-      const cat = hh.category || '其他';
-      if (!byCat[cat]) byCat[cat] = [];
-      byCat[cat].push({ stock: code, holder: hh });
-    }
+  // 数据展示区
+  h += '<div id="shTableContainer">';
+  h += _renderShTable(sh, '社保基金', '全部', quarters[0] || '');
+  h += '</div>';
+
+  h += '<div class="footnote" style="margin-top:16px">📅 数据更新: ' + (sh.date || '未知') + ' · 数据源: 东方财富F10 季度报告 · 显示近2季度对比</div>';
+  container.innerHTML = h;
+}
+
+// 股东表渲染核心 (被filterShareholders调用)
+function _renderShTable(sh, catFilter, dirFilter, quarter) {
+  // 根据季度选择数据源
+  let dataSource;
+  if (quarter && sh.history && sh.history[quarter]) {
+    dataSource = sh.history[quarter];
+  } else {
+    dataSource = sh.shareholders;
   }
+  if (!dataSource) return '<p style="color:#94a3b8;padding:20px;text-align:center">该季度暂无数据</p>';
 
+  let h = '';
   const catOrder = ['社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '其他'];
+  let hasAny = false;
   for (const cat of catOrder) {
-    if (!byCat[cat] || byCat[cat].length === 0) continue;
-    h += '<h4 style="margin:16px 0 8px">' + cat + ' <span class="count-badge">' + byCat[cat].length + '条</span></h4>';
+    if (catFilter !== '全部' && cat !== catFilter) continue;
+    const items = [];
+    for (const [code, holders] of Object.entries(dataSource)) {
+      for (const hh of holders) {
+        const hCat = hh.category || '其他';
+        if (hCat !== cat) continue;
+        if (dirFilter !== '全部' && hh.direction !== dirFilter && !(dirFilter === '新进' && hh.change === '新进')) continue;
+        items.push({ stock: code, holder: hh });
+      }
+    }
+    if (items.length === 0) continue;
+    hasAny = true;
+    h += '<h4 style="margin:16px 0 8px">' + cat + ' <span class="count-badge">' + items.length + '条</span></h4>';
     h += '<div class="backtest-box"><table style="font-size:12px"><thead><tr><th>股票</th><th>股东名称</th><th>持股数</th><th>持股比例</th><th>变动方向</th><th>排名</th></tr></thead><tbody>';
-    for (const item of byCat[cat].slice(0, 20)) {
+    for (const item of items) {
       const dirCls = item.holder.direction === '增持' ? 'dir-in' : (item.holder.direction === '减持' ? 'dir-out' : '');
       h += '<tr>';
       h += '<td><code>' + item.stock + '</code></td>';
@@ -1188,9 +1234,20 @@ function renderShareholders() {
     }
     h += '</tbody></table></div>';
   }
+  if (!hasAny) return '<p style="color:#94a3b8;padding:20px;text-align:center">当前筛选条件下无数据</p>';
+  return h;
+}
 
-  h += '<div class="footnote" style="margin-top:16px">📅 数据更新: ' + (sh.date || '未知') + ' · 数据源: 东方财富F10 季度报告</div>';
-  container.innerHTML = h;
+// 筛选函数(由onchange触发)
+function filterShareholders() {
+  const catFilter = document.getElementById('shCatFilter').value;
+  const dirFilter = document.getElementById('shDirFilter').value;
+  const quarter = document.getElementById('shQuarterFilter') ? document.getElementById('shQuarterFilter').value : '';
+  const meta = ALL_DATA._meta;
+  const sh = meta && meta.shareholders;
+  if (!sh) return;
+  const container = document.getElementById('shTableContainer');
+  container.innerHTML = _renderShTable(sh, catFilter, dirFilter, quarter);
 }
 
 // ========== 初始化: 从JSON文件加载 ==========

@@ -191,12 +191,35 @@ if alerts:
     for a in alerts[:10]:
         print(f"  {a['type']}: {a['stock']} {a['holder']}({a['category']}) {a['change']}")
 
+# === 加载历史数据 ===
+history = {}
+if os.path.exists(SHAREHOLDER_FILE):
+    with open(SHAREHOLDER_FILE, 'r') as f:
+        prev = json.load(f)
+        history = prev.get('history', {})
+
+# 按季度归类 (股东数据按季度报告公示)
+quarter = today[:7]  # YYYY-MM as quarter proxy
+if quarter not in history:
+    history[quarter] = {}
+
+for code, holders in enriched.items():
+    history[quarter][code] = holders
+
+# 保留近4个季度的数据
+quarters = sorted(history.keys(), reverse=True)
+if len(quarters) > 4:
+    for q in quarters[4:]:
+        del history[q]
+
 # 6. 保存
 output = {
     'date': today,
+    'quarter': quarter,
     'watchlist': watch_codes,
     'stockCodes': list(stock_codes),
     'shareholders': enriched,
+    'history': history,
     'summary': {k: len(v) for k, v in summary.items() if v},
     'alerts': alerts,
 }
