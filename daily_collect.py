@@ -158,7 +158,7 @@ for code, holdings in holdings_by_code.items():
         prefix = 'sh' if h['code'].startswith(('6','68')) else 'sz'
         all_stock_codes.add(prefix + h['code'])
 
-stock_chg = {}  # 完整code -> {changePct, closePrice}
+stock_chg = {}  # 完整code -> {changePct, closePrice, name, turnoverValue}
 if all_stock_codes:
     codes_str2 = ",".join(sorted(all_stock_codes))
     print(f"📊 持仓股票: {len(all_stock_codes)}只, 已批量查询涨跌")
@@ -170,18 +170,19 @@ if all_stock_codes:
         if not line.startswith('| '):
             continue
         parts = [p.strip() for p in line.split('|')]
-        if len(parts) >= 16:
+        if len(parts) >= 18:
             sc = parts[1]  # 完整代码(含前缀)
             try:
                 stock_chg[sc] = {
-                    'changePct': parts[15].replace('%',''),
-                    'closePrice': parts[14],
+                    'changePct': parts[16].replace('%',''),  # changePct在第16列(line starts with |)
+                    'closePrice': parts[15],                   # closePrice在第15列
                     'name': parts[2],
+                    'turnoverValue': float(parts[18]) if len(parts) > 18 and parts[18] else 0,
                 }
             except:
                 pass
 
-# 组装最终holdings数据(含涨跌)
+# 组装最终holdings数据(按成交额排序,取交易金额前3)
 final_holdings = {}
 for code, holdings in holdings_by_code.items():
     enriched = []
@@ -195,10 +196,13 @@ for code, holdings in holdings_by_code.items():
             'weight': h['weight'],
             'chgPct': chg_info.get('changePct', 'N/A'),
             'closePrice': chg_info.get('closePrice', 'N/A'),
+            'turnoverValue': chg_info.get('turnoverValue', 0),
         })
-    final_holdings[code] = enriched
+    # 按成交金额降序排序, 取交易最活跃的前3
+    enriched.sort(key=lambda x: -x['turnoverValue'])
+    final_holdings[code] = enriched[:3]
     if enriched:
-        top3 = ', '.join([f"{h['name']}({h['weight']}%)" for h in enriched])
+        top3 = ', '.join([f"{h['name']}(成交{round(h['turnoverValue']/1e8,1)}亿/涨{h['chgPct']}%)" for h in enriched[:3]])
         print(f"  {code}: {top3}")
 
 # 保存holdings.json (按日期归档)

@@ -500,7 +500,7 @@ html += """</select>
     <th>月收益<span class="tip-trigger" onclick="showTip('月收益','近1个月收益率(%)')">?</span></th>
     <th>换手率<span class="tip-trigger" onclick="showTip('换手率','当日成交量占总份额比例(%)')">?</span></th>
     <th>T+0<span class="tip-trigger" onclick="showTip('T+0标记','是否支持T+0交易,✓=是,✗=否')">?</span></th>
-    <th class="new-field">重仓TOP3<span class="tip-trigger" onclick="showTip('重仓TOP3','前3大重仓股名称(权重%)及当日涨跌')">?</span></th>
+    <th class="new-field">成交活跃TOP3<span class="tip-trigger" onclick="showTip('成交活跃TOP3','前3大成交额重仓股(按今日成交金额排序)及涨跌幅')">?</span></th>
   </tr></thead><tbody id="tableBody">
   </tbody></table></div>
 </div>
@@ -661,13 +661,14 @@ function renderTable(date, dd) {
     h += '<td>' + (r.r1m > 0 ? '+' : '') + r.r1m.toFixed(1) + '%</td>';
     h += '<td>' + r.turnover.toFixed(1) + '%</td>';
     h += '<td>' + (r.isT0 || '-') + '</td>';
-    // 重仓TOP3
+    // 成交活跃TOP3 (按成交金额排序)
     h += '<td class="holdings-cell" style="font-size:11px">';
     if (r.holdings && r.holdings.length > 0) {
       const cols = r.holdings.map(hh => {
         const chg = parseFloat(hh.chgPct);
         const cls = chg > 0 ? 'color:#dc2626' : (chg < 0 ? 'color:#16a34a' : 'color:#64748b');
-        return `<span style="white-space:nowrap">${hh.name}<span style="font-size:10px;color:#94a3b8">(${hh.weight}%)</span> <span style="${cls};font-weight:500">${chg > 0 ? '+' : ''}${hh.chgPct}%</span></span>`;
+        const tv = hh.turnoverValue ? (hh.turnoverValue / 1e8).toFixed(1) : '?';
+        return `<span style="white-space:nowrap">${hh.name}<span style="font-size:10px;color:#94a3b8">(${tv}亿)</span> <span style="${cls};font-weight:500">${chg > 0 ? '+' : ''}${hh.chgPct}%</span></span>`;
       });
       h += cols.join('<br>');
     } else {
