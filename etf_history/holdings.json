@@ -1,0 +1,3026 @@
+{
+  "2026-06-29": {
+    "sh510300": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 5.69,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.45,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.65,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sh510310": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 5.86,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.56,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.73,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sh510330": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 5.46,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.32,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.54,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sz159919": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 5.45,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.31,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.54,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sh510050": [
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 8.67,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 5.71,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 5.41,
+        "chgPct": "1482",
+        "closePrice": ""
+      }
+    ],
+    "sh510500": [
+      {
+        "code": "sz001309",
+        "name": "德明利",
+        "weight": 2.69,
+        "chgPct": "970",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688347",
+        "name": "华虹宏力",
+        "weight": 1.83,
+        "chgPct": "339.14",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300604",
+        "name": "长川科技",
+        "weight": 1.78,
+        "chgPct": "337.90",
+        "closePrice": ""
+      }
+    ],
+    "sh512100": [
+      {
+        "code": "sh688048",
+        "name": "长光华芯",
+        "weight": 1.14,
+        "chgPct": "418.33",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688146",
+        "name": "中船特气",
+        "weight": 1.11,
+        "chgPct": "370",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688167",
+        "name": "炬光科技",
+        "weight": 1.01,
+        "chgPct": "333.50",
+        "closePrice": ""
+      }
+    ],
+    "sh510180": [
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 5.74,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 3.78,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 3.39,
+        "chgPct": "354.84",
+        "closePrice": ""
+      }
+    ],
+    "sh530380": [
+      {
+        "code": "sh688347",
+        "name": "华虹宏力",
+        "weight": 2.08,
+        "chgPct": "339.14",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688200",
+        "name": "华峰测控",
+        "weight": 2.02,
+        "chgPct": "531.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688120",
+        "name": "华海清科",
+        "weight": 1.7,
+        "chgPct": "316.32",
+        "closePrice": ""
+      }
+    ],
+    "sz159901": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 9.47,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 8.9,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 6.03,
+        "chgPct": "556.96",
+        "closePrice": ""
+      }
+    ],
+    "sz159150": [
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 9.64,
+        "chgPct": "556.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 8.65,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 7.12,
+        "chgPct": "1220",
+        "closePrice": ""
+      }
+    ],
+    "sz159338": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 3.2,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.98,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 2.91,
+        "chgPct": "392.36",
+        "closePrice": ""
+      }
+    ],
+    "sz159339": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 3.17,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.96,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 2.89,
+        "chgPct": "392.36",
+        "closePrice": ""
+      }
+    ],
+    "sz159353": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.84,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 3.16,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.94,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sh510760": [
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 3.0,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601288",
+        "name": "农业银行",
+        "weight": 2.92,
+        "chgPct": "6.24",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601398",
+        "name": "工商银行",
+        "weight": 2.88,
+        "chgPct": "7.22",
+        "closePrice": ""
+      }
+    ],
+    "sz159591": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 12.2,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 9.27,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 5.69,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sz159628": [
+      {
+        "code": "sh688409",
+        "name": "富创精密",
+        "weight": 1.22,
+        "chgPct": "298",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002428",
+        "name": "云南锗业",
+        "weight": 0.8,
+        "chgPct": "124",
+        "closePrice": ""
+      },
+      {
+        "code": "sz301511",
+        "name": "德福科技",
+        "weight": 0.69,
+        "chgPct": "139.45",
+        "closePrice": ""
+      }
+    ],
+    "sz159915": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 14.89,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 13.58,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 9.41,
+        "chgPct": "556.96",
+        "closePrice": ""
+      }
+    ],
+    "sz159949": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 18.65,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 17.0,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 11.22,
+        "chgPct": "556.96",
+        "closePrice": ""
+      }
+    ],
+    "sh588000": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 9.01,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 7.91,
+        "chgPct": "354.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688012",
+        "name": "中微公司",
+        "weight": 7.63,
+        "chgPct": "456.69",
+        "closePrice": ""
+      }
+    ],
+    "sh588080": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 9.08,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 7.96,
+        "chgPct": "354.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688012",
+        "name": "中微公司",
+        "weight": 7.68,
+        "chgPct": "456.69",
+        "closePrice": ""
+      }
+    ],
+    "sh588220": [
+      {
+        "code": "sh688766",
+        "name": "普冉股份",
+        "weight": 4.01,
+        "chgPct": "737.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688200",
+        "name": "华峰测控",
+        "weight": 3.24,
+        "chgPct": "531.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688146",
+        "name": "中船特气",
+        "weight": 3.19,
+        "chgPct": "370",
+        "closePrice": ""
+      }
+    ],
+    "sh515800": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 4.75,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 4.08,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 2.48,
+        "chgPct": "392.36",
+        "closePrice": ""
+      }
+    ],
+    "sh515770": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 3.41,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 2.81,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 2.62,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sz159510": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 6.41,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601318",
+        "name": "中国平安",
+        "weight": 3.18,
+        "chgPct": "48.60",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000651",
+        "name": "格力电器",
+        "weight": 3.11,
+        "chgPct": "37.92",
+        "closePrice": ""
+      }
+    ],
+    "sz159656": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 9.41,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 7.15,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 6.37,
+        "chgPct": "556.96",
+        "closePrice": ""
+      }
+    ],
+    "sh515180": [
+      {
+        "code": "sh601919",
+        "name": "中远海控",
+        "weight": 2.8,
+        "chgPct": "13.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603565",
+        "name": "中谷物流",
+        "weight": 2.04,
+        "chgPct": "10.27",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000672",
+        "name": "上峰材料",
+        "weight": 2.0,
+        "chgPct": "22.26",
+        "closePrice": ""
+      }
+    ],
+    "sh515080": [
+      {
+        "code": "sh601919",
+        "name": "中远海控",
+        "weight": 2.82,
+        "chgPct": "13.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000672",
+        "name": "上峰材料",
+        "weight": 2.12,
+        "chgPct": "22.26",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603565",
+        "name": "中谷物流",
+        "weight": 2.06,
+        "chgPct": "10.27",
+        "closePrice": ""
+      }
+    ],
+    "sh563020": [
+      {
+        "code": "sh601229",
+        "name": "上海银行",
+        "weight": 2.82,
+        "chgPct": "8.89",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600750",
+        "name": "华润江中",
+        "weight": 2.72,
+        "chgPct": "23.16",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601009",
+        "name": "南京银行",
+        "weight": 2.67,
+        "chgPct": "10.27",
+        "closePrice": ""
+      }
+    ],
+    "sh512480": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 8.39,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 7.94,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002371",
+        "name": "北方华创",
+        "weight": 5.91,
+        "chgPct": "860.19",
+        "closePrice": ""
+      }
+    ],
+    "sz159558": [
+      {
+        "code": "sh688012",
+        "name": "中微公司",
+        "weight": 14.98,
+        "chgPct": "456.69",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002371",
+        "name": "北方华创",
+        "weight": 13.77,
+        "chgPct": "860.19",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688072",
+        "name": "拓荆科技",
+        "weight": 8.05,
+        "chgPct": "832",
+        "closePrice": ""
+      }
+    ],
+    "sz159995": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 10.55,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688498",
+        "name": "源杰科技",
+        "weight": 8.12,
+        "chgPct": "1724.83",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 7.99,
+        "chgPct": "1482",
+        "closePrice": ""
+      }
+    ],
+    "sz159819": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 10.53,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 9.54,
+        "chgPct": "556.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 9.13,
+        "chgPct": "354.84",
+        "closePrice": ""
+      }
+    ],
+    "sh516270": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 14.79,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 13.19,
+        "chgPct": "155.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300014",
+        "name": "亿纬锂能",
+        "weight": 5.43,
+        "chgPct": "64.60",
+        "closePrice": ""
+      }
+    ],
+    "sh515700": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 9.64,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002594",
+        "name": "比亚迪",
+        "weight": 8.58,
+        "chgPct": "79.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300124",
+        "name": "汇川技术",
+        "weight": 6.41,
+        "chgPct": "65.23",
+        "closePrice": ""
+      }
+    ],
+    "sz159071": [
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 10.64,
+        "chgPct": "155.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300014",
+        "name": "亿纬锂能",
+        "weight": 9.39,
+        "chgPct": "64.60",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 7.67,
+        "chgPct": "392.36",
+        "closePrice": ""
+      }
+    ],
+    "sz159840": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 13.41,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002594",
+        "name": "比亚迪",
+        "weight": 12.84,
+        "chgPct": "79.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600549",
+        "name": "厦门钨业",
+        "weight": 5.95,
+        "chgPct": "83.86",
+        "closePrice": ""
+      }
+    ],
+    "sz159175": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 10.8,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 9.99,
+        "chgPct": "155.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002050",
+        "name": "三花智控",
+        "weight": 5.88,
+        "chgPct": "41.27",
+        "closePrice": ""
+      }
+    ],
+    "sh512010": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 28.26,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600276",
+        "name": "恒瑞医药",
+        "weight": 21.82,
+        "chgPct": "52.93",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300760",
+        "name": "迈瑞医疗",
+        "weight": 8.01,
+        "chgPct": "137.49",
+        "closePrice": ""
+      }
+    ],
+    "sh512170": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 12.02,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300760",
+        "name": "迈瑞医疗",
+        "weight": 9.08,
+        "chgPct": "137.49",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688271",
+        "name": "联影医疗",
+        "weight": 6.66,
+        "chgPct": "102.03",
+        "closePrice": ""
+      }
+    ],
+    "sz159883": [
+      {
+        "code": "sz300760",
+        "name": "迈瑞医疗",
+        "weight": 13.35,
+        "chgPct": "137.49",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688271",
+        "name": "联影医疗",
+        "weight": 8.06,
+        "chgPct": "102.03",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688617",
+        "name": "惠泰医疗",
+        "weight": 4.51,
+        "chgPct": "191.11",
+        "closePrice": ""
+      }
+    ],
+    "sh516080": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 11.84,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600276",
+        "name": "恒瑞医药",
+        "weight": 9.75,
+        "chgPct": "52.93",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002821",
+        "name": "凯莱英",
+        "weight": 5.09,
+        "chgPct": "167.75",
+        "closePrice": ""
+      }
+    ],
+    "sz159859": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 11.72,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002821",
+        "name": "凯莱英",
+        "weight": 7.56,
+        "chgPct": "167.75",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600196",
+        "name": "复星医药",
+        "weight": 5.96,
+        "chgPct": "22.73",
+        "closePrice": ""
+      }
+    ],
+    "sh562860": [
+      {
+        "code": "sz300142",
+        "name": "沃森生物",
+        "weight": 9.45,
+        "chgPct": "12.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300122",
+        "name": "智飞生物",
+        "weight": 6.86,
+        "chgPct": "12.02",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688319",
+        "name": "欧林生物",
+        "weight": 5.51,
+        "chgPct": "38.29",
+        "closePrice": ""
+      }
+    ],
+    "sz159647": [
+      {
+        "code": "sh600436",
+        "name": "片仔癀",
+        "weight": 10.82,
+        "chgPct": "113.37",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000538",
+        "name": "云南白药",
+        "weight": 9.42,
+        "chgPct": "48.53",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000423",
+        "name": "东阿阿胶",
+        "weight": 6.54,
+        "chgPct": "45.80",
+        "closePrice": ""
+      }
+    ],
+    "sh512660": [
+      {
+        "code": "sh600150",
+        "name": "中国船舶",
+        "weight": 9.43,
+        "chgPct": "33.59",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688002",
+        "name": "睿创微纳",
+        "weight": 3.47,
+        "chgPct": "143.98",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002179",
+        "name": "中航光电",
+        "weight": 3.44,
+        "chgPct": "44.10",
+        "closePrice": ""
+      }
+    ],
+    "sh512670": [
+      {
+        "code": "sz300395",
+        "name": "菲利华",
+        "weight": 6.67,
+        "chgPct": "131.01",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600879",
+        "name": "航天电子",
+        "weight": 5.73,
+        "chgPct": "19.79",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002179",
+        "name": "中航光电",
+        "weight": 5.6,
+        "chgPct": "44.10",
+        "closePrice": ""
+      }
+    ],
+    "sz159227": [
+      {
+        "code": "sh600879",
+        "name": "航天电子",
+        "weight": 6.95,
+        "chgPct": "19.79",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600893",
+        "name": "航发动力",
+        "weight": 6.82,
+        "chgPct": "37.28",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002625",
+        "name": "光启技术",
+        "weight": 6.58,
+        "chgPct": "29.01",
+        "closePrice": ""
+      }
+    ],
+    "sh562500": [
+      {
+        "code": "sz002008",
+        "name": "大族激光",
+        "weight": 11.04,
+        "chgPct": "141.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300124",
+        "name": "汇川技术",
+        "weight": 8.47,
+        "chgPct": "65.23",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002050",
+        "name": "三花智控",
+        "weight": 8.08,
+        "chgPct": "41.27",
+        "closePrice": ""
+      }
+    ],
+    "sz159667": [
+      {
+        "code": "sz000988",
+        "name": "华工科技",
+        "weight": 14.68,
+        "chgPct": "177.03",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002008",
+        "name": "大族激光",
+        "weight": 13.8,
+        "chgPct": "141.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000657",
+        "name": "中钨高新",
+        "weight": 6.43,
+        "chgPct": "95.57",
+        "closePrice": ""
+      }
+    ],
+    "sh516320": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 11.19,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 4.44,
+        "chgPct": "155.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600150",
+        "name": "中国船舶",
+        "weight": 3.27,
+        "chgPct": "33.59",
+        "closePrice": ""
+      }
+    ],
+    "sz159013": [
+      {
+        "code": "sz002371",
+        "name": "北方华创",
+        "weight": 6.99,
+        "chgPct": "860.19",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 6.62,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600487",
+        "name": "亨通光电",
+        "weight": 5.72,
+        "chgPct": "108.04",
+        "closePrice": ""
+      }
+    ],
+    "sh512880": [
+      {
+        "code": "sh600030",
+        "name": "中信证券",
+        "weight": 14.3,
+        "chgPct": "28.49",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300059",
+        "name": "东方财富",
+        "weight": 13.43,
+        "chgPct": "20.10",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601211",
+        "name": "国泰海通",
+        "weight": 10.38,
+        "chgPct": "18.13",
+        "closePrice": ""
+      }
+    ],
+    "sh512070": [
+      {
+        "code": "sh601318",
+        "name": "中国平安",
+        "weight": 23.3,
+        "chgPct": "48.60",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600030",
+        "name": "中信证券",
+        "weight": 12.61,
+        "chgPct": "28.49",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300059",
+        "name": "东方财富",
+        "weight": 11.73,
+        "chgPct": "20.10",
+        "closePrice": ""
+      }
+    ],
+    "sh512800": [
+      {
+        "code": "sh600036",
+        "name": "招商银行",
+        "weight": 14.47,
+        "chgPct": "36.42",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601166",
+        "name": "兴业银行",
+        "weight": 9.74,
+        "chgPct": "16.88",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601398",
+        "name": "工商银行",
+        "weight": 7.98,
+        "chgPct": "7.22",
+        "closePrice": ""
+      }
+    ],
+    "sz159299": [
+      {
+        "code": "sz300059",
+        "name": "东方财富",
+        "weight": 11.27,
+        "chgPct": "20.10",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300033",
+        "name": "同花顺",
+        "weight": 10.46,
+        "chgPct": "239.48",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300803",
+        "name": "指南针",
+        "weight": 6.83,
+        "chgPct": "90.97",
+        "closePrice": ""
+      }
+    ],
+    "sz159928": [
+      {
+        "code": "sh600887",
+        "name": "伊利股份",
+        "weight": 10.25,
+        "chgPct": "24.58",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000858",
+        "name": "五粮液",
+        "weight": 9.7,
+        "chgPct": "74",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 9.68,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      }
+    ],
+    "sh515650": [
+      {
+        "code": "sz000333",
+        "name": "美的集团",
+        "weight": 15.22,
+        "chgPct": "77.27",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 12.24,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000651",
+        "name": "格力电器",
+        "weight": 10.27,
+        "chgPct": "37.92",
+        "closePrice": ""
+      }
+    ],
+    "sz159732": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 12.6,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002384",
+        "name": "东山精密",
+        "weight": 8.52,
+        "chgPct": "249.59",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002475",
+        "name": "立讯精密",
+        "weight": 8.16,
+        "chgPct": "65.30",
+        "closePrice": ""
+      }
+    ],
+    "sz159151": [
+      {
+        "code": "sh603288",
+        "name": "海天味业",
+        "weight": 10.27,
+        "chgPct": "34.08",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600887",
+        "name": "伊利股份",
+        "weight": 9.44,
+        "chgPct": "24.58",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000895",
+        "name": "双汇发展",
+        "weight": 5.77,
+        "chgPct": "22.79",
+        "closePrice": ""
+      }
+    ],
+    "sh516900": [
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 16.89,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600887",
+        "name": "伊利股份",
+        "weight": 15.09,
+        "chgPct": "24.58",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000858",
+        "name": "五粮液",
+        "weight": 13.75,
+        "chgPct": "74",
+        "closePrice": ""
+      }
+    ],
+    "sh512690": [
+      {
+        "code": "sh600519",
+        "name": "贵州茅台",
+        "weight": 16.76,
+        "chgPct": "1194.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000858",
+        "name": "五粮液",
+        "weight": 14.69,
+        "chgPct": "74",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000568",
+        "name": "泸州老窖",
+        "weight": 12.94,
+        "chgPct": "76.21",
+        "closePrice": ""
+      }
+    ],
+    "sz159996": [
+      {
+        "code": "sz000651",
+        "name": "格力电器",
+        "weight": 15.24,
+        "chgPct": "37.92",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000333",
+        "name": "美的集团",
+        "weight": 14.78,
+        "chgPct": "77.27",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002050",
+        "name": "三花智控",
+        "weight": 11.78,
+        "chgPct": "41.27",
+        "closePrice": ""
+      }
+    ],
+    "sz159766": [
+      {
+        "code": "sh601888",
+        "name": "中国中免",
+        "weight": 13.57,
+        "chgPct": "53.60",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600221",
+        "name": "海航控股",
+        "weight": 6.57,
+        "chgPct": "1.38",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600115",
+        "name": "中国东航",
+        "weight": 6.33,
+        "chgPct": "3.95",
+        "closePrice": ""
+      }
+    ],
+    "sz159869": [
+      {
+        "code": "sz002602",
+        "name": "世纪华通",
+        "weight": 13.97,
+        "chgPct": "13.87",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002558",
+        "name": "巨人网络",
+        "weight": 12.09,
+        "chgPct": "27.23",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002555",
+        "name": "三七互娱",
+        "weight": 9.49,
+        "chgPct": "18.90",
+        "closePrice": ""
+      }
+    ],
+    "sh516620": [
+      {
+        "code": "sh600637",
+        "name": "东方明珠",
+        "weight": 9.09,
+        "chgPct": "8.22",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300251",
+        "name": "光线传媒",
+        "weight": 8.63,
+        "chgPct": "10.95",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002624",
+        "name": "完美世界",
+        "weight": 8.61,
+        "chgPct": "12.69",
+        "closePrice": ""
+      }
+    ],
+    "sh512980": [
+      {
+        "code": "sz002602",
+        "name": "世纪华通",
+        "weight": 9.9,
+        "chgPct": "13.87",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300058",
+        "name": "蓝色光标",
+        "weight": 6.81,
+        "chgPct": "13.22",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002027",
+        "name": "分众传媒",
+        "weight": 6.74,
+        "chgPct": "4.82",
+        "closePrice": ""
+      }
+    ],
+    "sh513360": [
+      {
+        "code": "szTAL",
+        "name": "好未来",
+        "weight": 14.9,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09901",
+        "name": "新东方-S",
+        "weight": 14.86,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz002607",
+        "name": "中公教育",
+        "weight": 7.11,
+        "chgPct": "1.81",
+        "closePrice": ""
+      }
+    ],
+    "sh515880": [
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 15.03,
+        "chgPct": "556.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 14.27,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601138",
+        "name": "工业富联",
+        "weight": 9.06,
+        "chgPct": "69.61",
+        "closePrice": ""
+      }
+    ],
+    "sz159811": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 10.15,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 9.32,
+        "chgPct": "556.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 8.26,
+        "chgPct": "1220",
+        "closePrice": ""
+      }
+    ],
+    "sz159895": [
+      {
+        "code": "sz002475",
+        "name": "立讯精密",
+        "weight": 9.41,
+        "chgPct": "65.30",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 9.27,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 7.54,
+        "chgPct": "1220",
+        "closePrice": ""
+      }
+    ],
+    "sh515400": [
+      {
+        "code": "sh603019",
+        "name": "中科曙光",
+        "weight": 12.77,
+        "chgPct": "97.48",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002230",
+        "name": "科大讯飞",
+        "weight": 7.82,
+        "chgPct": "39.46",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000977",
+        "name": "浪潮信息",
+        "weight": 6.76,
+        "chgPct": "65.82",
+        "closePrice": ""
+      }
+    ],
+    "sh516510": [
+      {
+        "code": "sz300308",
+        "name": "中际旭创",
+        "weight": 7.56,
+        "chgPct": "1220",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300502",
+        "name": "新易盛",
+        "weight": 6.82,
+        "chgPct": "556.96",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002230",
+        "name": "科大讯飞",
+        "weight": 6.36,
+        "chgPct": "39.46",
+        "closePrice": ""
+      }
+    ],
+    "sh515230": [
+      {
+        "code": "sz300033",
+        "name": "同花顺",
+        "weight": 10.76,
+        "chgPct": "239.48",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002230",
+        "name": "科大讯飞",
+        "weight": 9.86,
+        "chgPct": "39.46",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688111",
+        "name": "金山办公",
+        "weight": 5.93,
+        "chgPct": "213.93",
+        "closePrice": ""
+      }
+    ],
+    "sz159586": [
+      {
+        "code": "sz002230",
+        "name": "科大讯飞",
+        "weight": 5.24,
+        "chgPct": "39.46",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300033",
+        "name": "同花顺",
+        "weight": 4.63,
+        "chgPct": "239.48",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688111",
+        "name": "金山办公",
+        "weight": 3.83,
+        "chgPct": "213.93",
+        "closePrice": ""
+      }
+    ],
+    "sh560800": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 10.25,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 8.12,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 6.06,
+        "chgPct": "354.84",
+        "closePrice": ""
+      }
+    ],
+    "sz159538": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 14.68,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 8.77,
+        "chgPct": "354.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688008",
+        "name": "澜起科技",
+        "weight": 8.32,
+        "chgPct": "296.06",
+        "closePrice": ""
+      }
+    ],
+    "sh515790": [
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 9.8,
+        "chgPct": "155.64",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600089",
+        "name": "特变电工",
+        "weight": 9.19,
+        "chgPct": "22.57",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601012",
+        "name": "隆基绿能",
+        "weight": 6.58,
+        "chgPct": "12.81",
+        "closePrice": ""
+      }
+    ],
+    "sh562960": [
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 10.88,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601985",
+        "name": "中国核电",
+        "weight": 8.87,
+        "chgPct": "9.06",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600905",
+        "name": "三峡能源",
+        "weight": 6.51,
+        "chgPct": "3.73",
+        "closePrice": ""
+      }
+    ],
+    "sz159641": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 10.94,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 6.38,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603993",
+        "name": "洛阳钼业",
+        "weight": 4.79,
+        "chgPct": "18",
+        "closePrice": ""
+      }
+    ],
+    "sz159146": [
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 10.66,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601985",
+        "name": "中国核电",
+        "weight": 8.04,
+        "chgPct": "9.06",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600905",
+        "name": "三峡能源",
+        "weight": 5.9,
+        "chgPct": "3.73",
+        "closePrice": ""
+      }
+    ],
+    "sh515220": [
+      {
+        "code": "sh601088",
+        "name": "中国神华",
+        "weight": 10.24,
+        "chgPct": "39.98",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601225",
+        "name": "陕西煤业",
+        "weight": 9.57,
+        "chgPct": "21",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600188",
+        "name": "兖矿能源",
+        "weight": 9.31,
+        "chgPct": "18.42",
+        "closePrice": ""
+      }
+    ],
+    "sz159181": [
+      {
+        "code": "sz002353",
+        "name": "杰瑞股份",
+        "weight": 15.91,
+        "chgPct": "150.69",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601857",
+        "name": "中国石油",
+        "weight": 13.3,
+        "chgPct": "8.92",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600938",
+        "name": "中国海油",
+        "weight": 11.46,
+        "chgPct": "27.34",
+        "closePrice": ""
+      }
+    ],
+    "sh560470": [
+      {
+        "code": "sh601899",
+        "name": "紫金矿业",
+        "weight": 13.25,
+        "chgPct": "25.79",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603993",
+        "name": "洛阳钼业",
+        "weight": 7.08,
+        "chgPct": "18",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600111",
+        "name": "北方稀土",
+        "weight": 5.55,
+        "chgPct": "47.62",
+        "closePrice": ""
+      }
+    ],
+    "sh561050": [
+      {
+        "code": "sh603993",
+        "name": "洛阳钼业",
+        "weight": 9.43,
+        "chgPct": "18",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600111",
+        "name": "北方稀土",
+        "weight": 7.39,
+        "chgPct": "47.62",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000657",
+        "name": "中钨高新",
+        "weight": 5.83,
+        "chgPct": "95.57",
+        "closePrice": ""
+      }
+    ],
+    "sh516150": [
+      {
+        "code": "sh600111",
+        "name": "北方稀土",
+        "weight": 14.06,
+        "chgPct": "47.62",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600549",
+        "name": "厦门钨业",
+        "weight": 6.7,
+        "chgPct": "83.86",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600392",
+        "name": "盛和资源",
+        "weight": 5.38,
+        "chgPct": "28.61",
+        "closePrice": ""
+      }
+    ],
+    "sh515210": [
+      {
+        "code": "sh600019",
+        "name": "宝钢股份",
+        "weight": 10.31,
+        "chgPct": "5.54",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600010",
+        "name": "包钢股份",
+        "weight": 10.24,
+        "chgPct": "2.19",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002756",
+        "name": "永兴材料",
+        "weight": 6.94,
+        "chgPct": "56.56",
+        "closePrice": ""
+      }
+    ],
+    "sh516020": [
+      {
+        "code": "sh600309",
+        "name": "万华化学",
+        "weight": 7.83,
+        "chgPct": "71.93",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000792",
+        "name": "盐湖股份",
+        "weight": 5.67,
+        "chgPct": "29.63",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600160",
+        "name": "巨化股份",
+        "weight": 4.44,
+        "chgPct": "53.80",
+        "closePrice": ""
+      }
+    ],
+    "sz159745": [
+      {
+        "code": "sh600585",
+        "name": "海螺水泥",
+        "weight": 14.35,
+        "chgPct": "17.20",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002271",
+        "name": "东方雨虹",
+        "weight": 9.95,
+        "chgPct": "12.07",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601636",
+        "name": "旗滨集团",
+        "weight": 8.11,
+        "chgPct": "9.82",
+        "closePrice": ""
+      }
+    ],
+    "sh516710": [
+      {
+        "code": "sz002371",
+        "name": "北方华创",
+        "weight": 13.33,
+        "chgPct": "860.19",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 8.32,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300408",
+        "name": "三环集团",
+        "weight": 7.87,
+        "chgPct": "166.69",
+        "closePrice": ""
+      }
+    ],
+    "sh512200": [
+      {
+        "code": "sh600048",
+        "name": "保利发展",
+        "weight": 8.47,
+        "chgPct": "4.72",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600895",
+        "name": "张江高科",
+        "weight": 8.0,
+        "chgPct": "35.09",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600246",
+        "name": "万通发展",
+        "weight": 7.39,
+        "chgPct": "18.47",
+        "closePrice": ""
+      }
+    ],
+    "sh516970": [
+      {
+        "code": "sh601668",
+        "name": "中国建筑",
+        "weight": 9.23,
+        "chgPct": "4.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601390",
+        "name": "中国中铁",
+        "weight": 7.13,
+        "chgPct": "4.25",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601669",
+        "name": "中国电建",
+        "weight": 6.8,
+        "chgPct": "4.78",
+        "closePrice": ""
+      }
+    ],
+    "sh515110": [
+      {
+        "code": "sh600176",
+        "name": "中国巨石",
+        "weight": 4.11,
+        "chgPct": "70.98",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601869",
+        "name": "长飞光纤",
+        "weight": 3.34,
+        "chgPct": "527.10",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601872",
+        "name": "招商轮船",
+        "weight": 3.13,
+        "chgPct": "18.26",
+        "closePrice": ""
+      }
+    ],
+    "sz159666": [
+      {
+        "code": "sh601816",
+        "name": "京沪高铁",
+        "weight": 9.32,
+        "chgPct": "4.61",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601919",
+        "name": "中远海控",
+        "weight": 7.79,
+        "chgPct": "13.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002352",
+        "name": "顺丰控股",
+        "weight": 6.64,
+        "chgPct": "31.33",
+        "closePrice": ""
+      }
+    ],
+    "sz159392": [
+      {
+        "code": "sz002085",
+        "name": "万丰奥威",
+        "weight": 4.9,
+        "chgPct": "10.92",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688297",
+        "name": "中无人机",
+        "weight": 3.94,
+        "chgPct": "39.57",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002389",
+        "name": "航天彩虹",
+        "weight": 3.71,
+        "chgPct": "17.01",
+        "closePrice": ""
+      }
+    ],
+    "sh516910": [
+      {
+        "code": "sh601919",
+        "name": "中远海控",
+        "weight": 13.6,
+        "chgPct": "13.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002352",
+        "name": "顺丰控股",
+        "weight": 11.73,
+        "chgPct": "31.33",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601872",
+        "name": "招商轮船",
+        "weight": 10.28,
+        "chgPct": "18.26",
+        "closePrice": ""
+      }
+    ],
+    "sz159825": [
+      {
+        "code": "sz002714",
+        "name": "牧原股份",
+        "weight": 15.47,
+        "chgPct": "35.99",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300498",
+        "name": "温氏股份",
+        "weight": 12.33,
+        "chgPct": "12.57",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002311",
+        "name": "海大集团",
+        "weight": 6.69,
+        "chgPct": "44.29",
+        "closePrice": ""
+      }
+    ],
+    "sz159023": [
+      {
+        "code": "sz002714",
+        "name": "牧原股份",
+        "weight": 15.58,
+        "chgPct": "35.99",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300498",
+        "name": "温氏股份",
+        "weight": 15.14,
+        "chgPct": "12.57",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002311",
+        "name": "海大集团",
+        "weight": 9.65,
+        "chgPct": "44.29",
+        "closePrice": ""
+      }
+    ],
+    "sh510060": [
+      {
+        "code": "sh600036",
+        "name": "招商银行",
+        "weight": 9.46,
+        "chgPct": "36.42",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 6.9,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688981",
+        "name": "中芯国际",
+        "weight": 6.62,
+        "chgPct": "151",
+        "closePrice": ""
+      }
+    ],
+    "sh515900": [
+      {
+        "code": "sz002415",
+        "name": "海康威视",
+        "weight": 5.63,
+        "chgPct": "32.99",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600406",
+        "name": "国电南瑞",
+        "weight": 4.52,
+        "chgPct": "23.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600150",
+        "name": "中国船舶",
+        "weight": 2.99,
+        "chgPct": "33.59",
+        "closePrice": ""
+      }
+    ],
+    "sh560170": [
+      {
+        "code": "sz002916",
+        "name": "深南电路",
+        "weight": 11.84,
+        "chgPct": "434.16",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002281",
+        "name": "光迅科技",
+        "weight": 9.85,
+        "chgPct": "235.94",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600584",
+        "name": "长电科技",
+        "weight": 9.65,
+        "chgPct": "103.25",
+        "closePrice": ""
+      }
+    ],
+    "sh512960": [
+      {
+        "code": "sh688008",
+        "name": "澜起科技",
+        "weight": 5.78,
+        "chgPct": "296.06",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600584",
+        "name": "长电科技",
+        "weight": 5.57,
+        "chgPct": "103.25",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002415",
+        "name": "海康威视",
+        "weight": 5.15,
+        "chgPct": "32.99",
+        "closePrice": ""
+      }
+    ],
+    "sh562850": [
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 10.46,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600406",
+        "name": "国电南瑞",
+        "weight": 6.51,
+        "chgPct": "23.40",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601985",
+        "name": "中国核电",
+        "weight": 5.26,
+        "chgPct": "9.06",
+        "closePrice": ""
+      }
+    ],
+    "sh510810": [
+      {
+        "code": "sh601211",
+        "name": "国泰海通",
+        "weight": 7.96,
+        "chgPct": "18.13",
+        "closePrice": ""
+      },
+      {
+        "code": "sh601601",
+        "name": "中国太保",
+        "weight": 7.32,
+        "chgPct": "29.35",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688347",
+        "name": "华虹宏力",
+        "weight": 6.16,
+        "chgPct": "339.14",
+        "closePrice": ""
+      }
+    ],
+    "sh512970": [
+      {
+        "code": "sz002475",
+        "name": "立讯精密",
+        "weight": 6.46,
+        "chgPct": "65.30",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688525",
+        "name": "佰维存储",
+        "weight": 5.95,
+        "chgPct": "507",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600183",
+        "name": "生益科技",
+        "weight": 5.3,
+        "chgPct": "171.16",
+        "closePrice": ""
+      }
+    ],
+    "sh512650": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 5.69,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300059",
+        "name": "东方财富",
+        "weight": 4.55,
+        "chgPct": "20.10",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688008",
+        "name": "澜起科技",
+        "weight": 4.44,
+        "chgPct": "296.06",
+        "closePrice": ""
+      }
+    ],
+    "sh589130": [
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 8.23,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 7.97,
+        "chgPct": "354.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688012",
+        "name": "中微公司",
+        "weight": 7.69,
+        "chgPct": "456.69",
+        "closePrice": ""
+      }
+    ],
+    "sz159546": [
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 11.59,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688256",
+        "name": "寒武纪",
+        "weight": 10.21,
+        "chgPct": "1482",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688041",
+        "name": "海光信息",
+        "weight": 7.15,
+        "chgPct": "354.84",
+        "closePrice": ""
+      }
+    ],
+    "sh515260": [
+      {
+        "code": "sz002371",
+        "name": "北方华创",
+        "weight": 7.45,
+        "chgPct": "860.19",
+        "closePrice": ""
+      },
+      {
+        "code": "sh603986",
+        "name": "兆易创新",
+        "weight": 7.06,
+        "chgPct": "840",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688012",
+        "name": "中微公司",
+        "weight": 5.68,
+        "chgPct": "456.69",
+        "closePrice": ""
+      }
+    ],
+    "sh515250": [
+      {
+        "code": "sz300223",
+        "name": "北京君正",
+        "weight": 6.73,
+        "chgPct": "242.05",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688521",
+        "name": "芯原股份",
+        "weight": 6.47,
+        "chgPct": "362",
+        "closePrice": ""
+      },
+      {
+        "code": "sz002475",
+        "name": "立讯精密",
+        "weight": 5.23,
+        "chgPct": "65.30",
+        "closePrice": ""
+      }
+    ],
+    "sh512580": [
+      {
+        "code": "sz300750",
+        "name": "宁德时代",
+        "weight": 9.76,
+        "chgPct": "392.36",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600900",
+        "name": "长江电力",
+        "weight": 9.55,
+        "chgPct": "26.84",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300274",
+        "name": "阳光电源",
+        "weight": 7.74,
+        "chgPct": "155.64",
+        "closePrice": ""
+      }
+    ],
+    "sh516560": [
+      {
+        "code": "sz300972",
+        "name": "万辰集团",
+        "weight": 4.92,
+        "chgPct": "177.15",
+        "closePrice": ""
+      },
+      {
+        "code": "sz300760",
+        "name": "迈瑞医疗",
+        "weight": 3.97,
+        "chgPct": "137.49",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600436",
+        "name": "片仔癀",
+        "weight": 3.2,
+        "chgPct": "113.37",
+        "closePrice": ""
+      }
+    ],
+    "sh513050": [
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 32.11,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09988",
+        "name": "阿里巴巴-W",
+        "weight": 25.59,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szPDD",
+        "name": "拼多多",
+        "weight": 6.88,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh511380": [
+      {
+        "code": "sz113052",
+        "name": "兴业转债",
+        "weight": 0.73,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz113042",
+        "name": "上银转债",
+        "weight": 0.36,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz113056",
+        "name": "重银转债",
+        "weight": 0.23,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh511260": [
+      {
+        "code": "sz019833",
+        "name": "26国债07",
+        "weight": 17.03,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019831",
+        "name": "26国债05",
+        "weight": 15.85,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019743",
+        "name": "24国债11",
+        "weight": 13.22,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh511100": [
+      {
+        "code": "sz019831",
+        "name": "26国债05",
+        "weight": 27.52,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019835",
+        "name": "26国债09",
+        "weight": 15.44,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019776",
+        "name": "25特国02",
+        "weight": 7.9,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh511090": [
+      {
+        "code": "sz019837",
+        "name": "26特国02",
+        "weight": 47.76,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019776",
+        "name": "25特国02",
+        "weight": 44.79,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019742",
+        "name": "24特国01",
+        "weight": 20.48,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513600": [
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 9.54,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz00005",
+        "name": "汇丰控股",
+        "weight": 9.28,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09988",
+        "name": "阿里巴巴-W",
+        "weight": 7.72,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh510900": [
+      {
+        "code": "sz00939",
+        "name": "建设银行",
+        "weight": 8.28,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 8.05,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09988",
+        "name": "阿里巴巴-W",
+        "weight": 6.43,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513330": [
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 16.53,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09988",
+        "name": "阿里巴巴-W",
+        "weight": 13.2,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09999",
+        "name": "网易-S",
+        "weight": 12.23,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513060": [
+      {
+        "code": "sz06160",
+        "name": "百济神州",
+        "weight": 10.77,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz01801",
+        "name": "信达生物",
+        "weight": 10.44,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz02269",
+        "name": "药明生物",
+        "weight": 10.3,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513020": [
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 10.08,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz00981",
+        "name": "中芯国际",
+        "weight": 9.77,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz03690",
+        "name": "美团-W",
+        "weight": 9.24,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sz159605": [
+      {
+        "code": "sz00700",
+        "name": "腾讯控股",
+        "weight": 16.0,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz09988",
+        "name": "阿里巴巴-W",
+        "weight": 13.69,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szPDD",
+        "name": "拼多多",
+        "weight": 10.98,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sz159502": [
+      {
+        "code": "szAPGE",
+        "name": "Apogee Therapeutics, Inc.",
+        "weight": 1.54,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szKYMR",
+        "name": "Kymera Therapeutics, Inc.",
+        "weight": 1.46,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szTWST",
+        "name": "Twist Bioscience Corp.",
+        "weight": 1.38,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513350": [
+      {
+        "code": "szTPL",
+        "name": "Texas Pacific Land Corporation",
+        "weight": 2.9,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szCNX",
+        "name": "CNX Resources Corporation",
+        "weight": 2.74,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szEXE",
+        "name": "Expand Energy Corporation",
+        "weight": 2.73,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513300": [
+      {
+        "code": "szNVDA",
+        "name": "英伟达",
+        "weight": 7.61,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szAAPL",
+        "name": "苹果",
+        "weight": 6.5,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szMU",
+        "name": "美光科技",
+        "weight": 6.18,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh513500": [
+      {
+        "code": "szNVDA",
+        "name": "英伟达",
+        "weight": 7.37,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szAAPL",
+        "name": "苹果",
+        "weight": 6.31,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "szMSFT",
+        "name": "微软",
+        "weight": 4.1,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh520830": [
+      {
+        "code": "sz02830",
+        "name": "南方沙特",
+        "weight": 99.46,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sh511580": [
+      {
+        "code": "sz019796",
+        "name": "25国债23",
+        "weight": 23.98,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019830",
+        "name": "26国债04",
+        "weight": 17.76,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      },
+      {
+        "code": "sz019792",
+        "name": "25国债19",
+        "weight": 11.52,
+        "chgPct": "N/A",
+        "closePrice": "N/A"
+      }
+    ],
+    "sz159992": [
+      {
+        "code": "sh603259",
+        "name": "药明康德",
+        "weight": 10.45,
+        "chgPct": "126.17",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600276",
+        "name": "恒瑞医药",
+        "weight": 9.68,
+        "chgPct": "52.93",
+        "closePrice": ""
+      },
+      {
+        "code": "sh688331",
+        "name": "荣昌生物",
+        "weight": 5.28,
+        "chgPct": "131.58",
+        "closePrice": ""
+      }
+    ],
+    "sz159307": [
+      {
+        "code": "sh600177",
+        "name": "雅戈尔",
+        "weight": 2.68,
+        "chgPct": "7.60",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000937",
+        "name": "冀中能源",
+        "weight": 2.49,
+        "chgPct": "4.01",
+        "closePrice": ""
+      },
+      {
+        "code": "sz000538",
+        "name": "云南白药",
+        "weight": 2.47,
+        "chgPct": "48.53",
+        "closePrice": ""
+      }
+    ],
+    "sh515450": [
+      {
+        "code": "sz000651",
+        "name": "格力电器",
+        "weight": 3.92,
+        "chgPct": "37.92",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600642",
+        "name": "申能股份",
+        "weight": 3.66,
+        "chgPct": "8.82",
+        "closePrice": ""
+      },
+      {
+        "code": "sh600023",
+        "name": "浙能电力",
+        "weight": 3.65,
+        "chgPct": "5.28",
+        "closePrice": ""
+      }
+    ]
+  }
+}

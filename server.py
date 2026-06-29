@@ -56,6 +56,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         # 映射URL路径到文件系统路径
         from urllib.parse import unquote
         path = unquote(self.path.split('?')[0])  # URL解码 + 去除查询参数
+        # 处理curl等工具发来的完整URL: http://host:port/path → /path
+        if path.startswith('http://') or path.startswith('https://'):
+            path = '/' + path.split('/', 3)[-1]
         if path == '/':
             path = '/index.html'
         filepath = os.path.normpath(os.path.join(DIR, path.lstrip('/')))

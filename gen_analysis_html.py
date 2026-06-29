@@ -94,6 +94,12 @@ with open(CSV_FILE, 'r', encoding='utf-8') as f:
         if idx not in all_data[d]:
             all_data[d][idx] = []
         all_data[d][idx].append(row)
+# 读取持仓数据
+HOLDINGS_FILE = os.path.join(os.path.dirname(CSV_FILE), "holdings.json")
+all_holdings = {}  # date -> {code -> [{code,name,weight,chgPct}]}
+if os.path.exists(HOLDINGS_FILE):
+    with open(HOLDINGS_FILE, 'r', encoding='utf-8') as f:
+        all_holdings = json.load(f)
 dates = sorted(all_data.keys())
 # 过滤掉周末日期（交易日是周一到周五）
 import datetime as dtmd
@@ -238,6 +244,13 @@ for d in dates:
             'index1Y': dd['index1Y'], 'ytdMdd': round(dd['ytdMdd'],1), 'isT0': dd['isT0'],
             'dir': fdir, 'sig': sig, 'desc': desc, 'flow10': round(dd['flow']*10,0),
         }
+        # 加入持仓数据
+        day_holdings = all_holdings.get(d, {})
+        code = dd.get('main_code','')
+        if code and code in day_holdings:
+            entry['holdings'] = day_holdings[code]
+        else:
+            entry['holdings'] = []
         date_data.append(entry)
     
     # 卖点信号: 直接用当日分析结果 = 当日回避清单
@@ -487,6 +500,7 @@ html += """</select>
     <th>月收益<span class="tip-trigger" onclick="showTip('月收益','近1个月收益率(%)')">?</span></th>
     <th>换手率<span class="tip-trigger" onclick="showTip('换手率','当日成交量占总份额比例(%)')">?</span></th>
     <th>T+0<span class="tip-trigger" onclick="showTip('T+0标记','是否支持T+0交易,✓=是,✗=否')">?</span></th>
+    <th class="new-field">重仓TOP3<span class="tip-trigger" onclick="showTip('重仓TOP3','前3大重仓股名称(权重%)及当日涨跌')">?</span></th>
   </tr></thead><tbody id="tableBody">
   </tbody></table></div>
 </div>
@@ -647,6 +661,19 @@ function renderTable(date, dd) {
     h += '<td>' + (r.r1m > 0 ? '+' : '') + r.r1m.toFixed(1) + '%</td>';
     h += '<td>' + r.turnover.toFixed(1) + '%</td>';
     h += '<td>' + (r.isT0 || '-') + '</td>';
+    // 重仓TOP3
+    h += '<td class="holdings-cell" style="font-size:11px">';
+    if (r.holdings && r.holdings.length > 0) {
+      const cols = r.holdings.map(hh => {
+        const chg = parseFloat(hh.chgPct);
+        const cls = chg > 0 ? 'color:#dc2626' : (chg < 0 ? 'color:#16a34a' : 'color:#64748b');
+        return `<span style="white-space:nowrap">${hh.name}<span style="font-size:10px;color:#94a3b8">(${hh.weight}%)</span> <span style="${cls};font-weight:500">${chg > 0 ? '+' : ''}${hh.chgPct}%</span></span>`;
+      });
+      h += cols.join('<br>');
+    } else {
+      h += '<span style="color:#94a3b8">-</span>';
+    }
+    h += '</td>';
     h += '</tr>';
   }
   tb.innerHTML = h;
