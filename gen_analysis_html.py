@@ -292,6 +292,7 @@ for d in dates:
             'sig': cur_sig,
             'reasons': '; '.join(reasons),
             'type': sell_type,
+            'holdings': day_holdings.get(cur.get('main_code',''), []),
         })
     
     # ===== 市场基准统计 =====
@@ -527,7 +528,7 @@ html += """</tbody></table>
   <h4 style="margin:20px 0 8px">量化回测筛选结果（条件: 份额↑0.5%~3% + 价格↑ + 资金流入正）</h4>
   <p style="font-size:11px;color:#64748b;margin:-4px 0 8px">🟢=资金流高于全市场中位数 🔴=低于中位数</p>
   <div class="backtest-box">
-  <table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>同类历史胜率</th></tr></thead><tbody id="quantRecomTbody">
+  <table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>同类历史胜率</th><th>成交活跃TOP3</th></tr></thead><tbody id="quantRecomTbody">
   </tbody></table>
   </div>
   
@@ -705,13 +706,24 @@ function renderQual(date, dd) {
     items.sort((a,b) => Math.abs(b.flow) - Math.abs(a.flow));
     h += '<div class="qual-section" style="border-left:4px solid ' + sec.bg + '">';
     h += '<h4>' + sec.title + ' <span class="count-badge">' + items.length + '个</span></h4>';
-    h += '<table class="qual-table"><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>信号说明</th></tr>';
+    h += '<table class="qual-table"><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>信号说明</th><th>成交活跃TOP3</th></tr>';
     for (const r of items.slice(0, 10)) {
-      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td><td>' + hHoldings(r) + '</td></tr>';
     }
     h += '</table></div>';
   }
   document.getElementById('qualContent').innerHTML = h || '<p style="color:#64748b;padding:12px">当前日期暂无数据</p>';
+}
+
+// 成交活跃TOP3 辅助渲染函数
+function hHoldings(r) {
+  if (!r.holdings || r.holdings.length === 0) return '<span style="color:#94a3b8;font-size:11px">-</span>';
+  return r.holdings.map(hh => {
+    const chg = parseFloat(hh.chgPct);
+    const cls = chg > 0 ? '#dc2626' : (chg < 0 ? '#16a34a' : '#64748b');
+    const tv = hh.turnoverValue ? (hh.turnoverValue / 1e8).toFixed(1) : '?';
+    return `<span style="white-space:nowrap;font-size:11px">${hh.name}<span style="font-size:10px;color:#94a3b8">${tv}亿</span> <span style="color:${cls};font-weight:500">${chg > 0 ? '+' : ''}${hh.chgPct}%</span></span>`;
+  }).join('<br>');
 }
 
 function renderQuant(date, dd) {
@@ -723,9 +735,9 @@ function renderQuant(date, dd) {
     const r = dd.data.find(x => x.name === name);
     if (!r) continue;
     const vsMedian = ms && r.flow > ms.medianFlow ? '🟢' : (ms && r.flow < ms.medianFlow ? '🔴' : '');
-    h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + vsMedian + ' ' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td></tr>';
+    h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + vsMedian + ' ' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>75%胜率</td><td>' + hHoldings(r) + '</td></tr>';
   }
-  tb.innerHTML = h || '<tr><td colspan="5" style="color:#64748b;text-align:center">当前日期无符合条件的量化推荐</td></tr>';
+  tb.innerHTML = h || '<tr><td colspan="6" style="color:#64748b;text-align:center">当前日期无符合条件的量化推荐</td></tr>';
 }
 
 // ===== 市场基准统计 =====
@@ -812,7 +824,7 @@ function renderSummary(date, dd) {
   h += '<div class="sell-alert"><h3>🔴 卖点预警' + (sell.length > 0 ? '（' + sell.length + '个）' : '（当前无信号）') + '</h3>';
   h += '<p style="font-size:12px;color:#991b1b;margin-bottom:10px">以下指数今日出现<strong>出货嫌疑/恐慌出逃/大额资金流出</strong>，建议回避或卖出</p>';
   if (sell.length > 0) {
-    h += '<table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>风险信号</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>风险信号</th><th>成交活跃TOP3</th></tr></thead><tbody>';
     for (const s of sell) {
       const badge = s.type === 'both' ? '强烈卖出' : (s.type === 'qual' ? '定性卖出' : '量化卖出');
       const badgeCls = s.type === 'both' ? 'sell-strong' : 'sell-normal';
@@ -822,6 +834,7 @@ function renderSummary(date, dd) {
       h += '<td>' + (s.curPc > 0 ? '+' : '') + s.curPc.toFixed(2) + '%</td>';
       h += '<td class="flow-cell sell-flow">' + (s.curFlow > 0 ? '+' : '') + s.curFlow.toFixed(2) + '亿</td>';
       h += '<td><span class="' + badgeCls + '">' + badge + '</span> ' + s.reasons + '</td>';
+      h += '<td>' + hHoldings({ holdings: s.holdings || [] }) + '</td>';
       h += '</tr>';
     }
     h += '</tbody></table>';
@@ -832,31 +845,31 @@ function renderSummary(date, dd) {
   
   if (ov.length > 0) {
     h += '<div class="overlap-box"><h3>🎯 强烈推荐（' + ov.length + '个）</h3><p style="font-size:13px;color:#92400e;margin-bottom:10px">量化回测 + 四象限定性分析 同时确认</p>';
-    h += '<table><thead><tr><th></th><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>定性信号</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th></th><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>定性信号</th><th>成交活跃TOP3</th></tr></thead><tbody>';
     for (const name of ov) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td><span class="star">⭐⭐⭐</span></td><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig.replace(/[^\w\u4e00-\u9fa5]/g,'').trim() + '</td></tr>';
+      h += '<tr><td><span class="star">⭐⭐⭐</span></td><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td class="flow-cell">' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.sig.replace(/[^\w\u4e00-\u9fa5]/g,'').trim() + '</td><td>' + hHoldings(r) + '</td></tr>';
     }
     h += '</tbody></table></div>';
   }
   if (oq.length > 0) {
     h += '<h4 style="margin:16px 0 8px">📊 仅量化推荐（' + oq.length + '个）</h4><p style="font-size:12px;color:#64748b;margin-bottom:8px">量价配合好,但定性未归入积极区间</p>';
-    h += '<div class="backtest-box"><table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>参考</th></tr></thead><tbody>';
+    h += '<div class="backtest-box"><table><thead><tr><th>指数</th><th>份额变化</th><th>价格涨跌</th><th>资金流</th><th>参考</th><th>成交活跃TOP3</th></tr></thead><tbody>';
     for (const name of oq.slice(0, 10)) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>历史同类胜率75%</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.pc > 0 ? '+' : '') + r.pc.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td>历史同类胜率75%</td><td>' + hHoldings(r) + '</td></tr>';
     }
     h += '</tbody></table></div>';
   }
   if (ol.length > 0) {
     h += '<h4 style="margin:16px 0 8px">🔍 仅定性推荐（' + ol.length + '个）</h4><p style="font-size:12px;color:#64748b;margin-bottom:8px">四象限显示主力建仓/吸筹迹象,但量化历史数据不支持</p>';
-    h += '<div class="backtest-box"><table><thead><tr><th>指数</th><th>份额变化</th><th>资金流</th><th>参考逻辑</th></tr></thead><tbody>';
+    h += '<div class="backtest-box"><table><thead><tr><th>指数</th><th>份额变化</th><th>资金流</th><th>参考逻辑</th><th>成交活跃TOP3</th></tr></thead><tbody>';
     for (const name of ol.slice(0, 10)) {
       const r = dd.data.find(x => x.name === name);
       if (!r) continue;
-      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td></tr>';
+      h += '<tr><td class="name-cell">' + r.name + '<br><span class="code-sub-sm">' + (r.mainCode || '') + '</span></td><td>' + (r.chgPct > 0 ? '+' : '') + r.chgPct.toFixed(2) + '%</td><td>' + (r.flow > 0 ? '+' : '') + r.flow.toFixed(2) + '亿</td><td class="desc-cell">' + r.desc + '</td><td>' + hHoldings(r) + '</td></tr>';
     }
     h += '</tbody></table></div>';
   }
@@ -982,7 +995,7 @@ function renderWatchlist(date, dd) {
     h += '<h4 style="margin:12px 0 8px">📊 自选标的全景监控 <span class="count-badge">' + items.length + '/' + list.length + '</span></h4>';
     if (items.length > 0) {
       h += '<div class="table-wrap"><table><thead><tr>';
-      h += '<th>代码</th><th>指数</th><th>资金流</th><th>份额变化</th><th>涨跌幅</th><th>vs中位数</th><th>定性信号</th><th>量化</th><th>卖点</th></tr></thead><tbody>';
+      h += '<th>代码</th><th>指数</th><th>资金流</th><th>份额变化</th><th>涨跌幅</th><th>vs中位数</th><th>定性信号</th><th>量化</th><th>卖点</th><th>成交活跃TOP3</th></tr></thead><tbody>';
       for (const {item: r, code: c} of items) {
         const inOverlap = dd.overlap.includes(r.name);
         const inQuant = dd.onlyQuant.includes(r.name);
@@ -999,6 +1012,7 @@ function renderWatchlist(date, dd) {
         h += '<td class="desc-cell">' + (r.sig || '-') + '</td>';
         h += '<td>' + (inOverlap ? '<span class="dir-badge dir-in" style="font-weight:600">⭐⭐重叠</span>' : inQuant ? '<span style="color:#2563eb;font-size:11px">📊量化</span>' : inQual ? '<span style="color:#f59e0b;font-size:11px">🔍定性</span>' : '<span style="color:#94a3b8">-</span>') + '</td>';
         h += '<td>' + (sellSig ? '<span class="dir-badge dir-out" style="font-weight:600">⚠️卖出</span>' : '<span style="color:#94a3b8">-</span>') + '</td>';
+        h += '<td>' + hHoldings(r) + '</td>';
         h += '</tr>';
       }
       h += '</tbody></table></div>';
