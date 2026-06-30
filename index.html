@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF & 个股分析平台</title>
+<style>
+/* === 全局 === */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f2f5; color: #1e293b; }
+.header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: #fff; padding: 18px 28px; }
+.header h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; }
+.header span { font-size: 12px; opacity: 0.7; margin-left: 12px; }
+.subtitle { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+/* === 模块入口 === */
+.module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.module-card { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); text-decoration: none; color: inherit; }
+.module-card:hover { border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59,130,246,0.12); transform: translateY(-1px); }
+.module-icon { font-size: 28px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #eff6ff; border-radius: 10px; }
+.module-info { flex: 1; }
+.module-name { font-size: 15px; font-weight: 600; }
+.module-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.module-tag { font-size: 11px; padding: 2px 8px; background: #f1f5f9; border-radius: 10px; color: #64748b; white-space: nowrap; }
+
+/* === 速览报告 === */
+.report-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.report-header h2 { font-size: 17px; font-weight: 600; }
+.tag-btn { font-size: 12px; padding: 5px 12px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; color: #475569; }
+
+/* === 双栏布局 === */
+.dual-panel { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+@media (max-width: 860px) { .dual-panel { grid-template-columns: 1fr; } }
+
+/* === 主表 === */
+.main-table { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.main-table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.main-table th { background: #f8fafc; text-align: left; padding: 10px 12px; font-weight: 600; font-size: 12px; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+.main-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+.main-table tr:last-child td { border-bottom: none; }
+.rank-cell { font-size: 16px; text-align: center; width: 36px; }
+.zt-badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-weight: 600; font-size: 12px; }
+.zt-high { background: #fef2f2; color: #dc2626; }
+.zt-mid { background: #fef9c3; color: #92400e; }
+.zt-low { background: #f1f5f9; color: #475569; }
+.sector-name { font-weight: 600; font-size: 13px; }
+.sector-name-sub { font-size: 11px; color: #94a3b8; }
+.lianban { font-size: 12px; color: #dc2626; font-weight: 500; }
+.catalyst-cell { font-size: 12px; line-height: 1.5; color: #475569; }
+.catalyst-flow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.catalyst-flow span { white-space: nowrap; }
+
+/* === 右侧专栏 === */
+.sidebar-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.sidebar-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+.insight-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.insight-item:last-child { border-bottom: none; }
+.insight-icon { font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px; flex-shrink: 0; }
+.insight-content { flex: 1; }
+.insight-title { font-size: 12px; font-weight: 600; color: #334155; }
+.insight-text { font-size: 12px; color: #475569; margin-top: 2px; }
+.insight-note { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.sidebar-footer { font-size: 11px; color: #94a3b8; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; text-align: center; }
+
+/* === 底部 === */
+.footer { text-align: center; font-size: 11px; color: #94a3b8; padding: 20px; border-top: 1px solid #e2e8f0; margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 市场分析平台 <span>v2.0</span></h1>
+  <div class="subtitle">2026年6月30日 · 收盘速览</div>
+</div>
+
+<div class="container">
+
+<!-- ===== 模块入口 ===== -->
+<div class="module-grid">
+  <a href="全量指数申购流入排行.html" class="module-card">
+    <div class="module-icon">📈</div>
+    <div class="module-info">
+      <div class="module-name">ETF模块</div>
+      <div class="module-desc">全量指数申购流入排行</div>
+    </div>
+    <span class="module-tag">5日数据</span>
+  </a>
+  <a href="#" class="module-card" onclick="alert('个股模块开发中，敬请期待');return false">
+    <div class="module-icon">📊</div>
+    <div class="module-info">
+      <div class="module-name">个股模块</div>
+      <div class="module-desc">个股龙虎榜 & 资金分析</div>
+    </div>
+    <span class="module-tag">即将上线</span>
+  </a>
+</div>
+
+<!-- ===== 热点板块速览报告 ===== -->
+<div class="report-header">
+  <h2>🔥 热点板块 & 资金进攻方向</h2>
+  <span class="tag-btn">🏆 涨停家数排名</span>
+</div>
+
+<div class="dual-panel">
+
+  <!-- === 左侧主表 === -->
+  <div class="main-table">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px">排名</th>
+          <th style="width:100px">板块</th>
+          <th style="width:70px">涨停数</th>
+          <th style="width:80px">最高连板</th>
+          <th>核心催化</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rank-cell">🥇</td>
+          <td><div class="sector-name">光学光电子</div><div class="sector-name-sub">涨幅7.18%</div></td>
+          <td><span class="zt-badge zt-low">1家</span></td>
+          <td><span class="lianban">1只强势</span></td>
+          <td class="catalyst-cell">
+            <div>消费电子复苏+华为链催化，光学板块领涨</div>
+            <div class="catalyst-flow">
+              <span>📊 成交额: <b>386亿</b></span>
+              <span>💰 主力净流: <span style="color:#dc2626;font-weight:600">+0.01亿</span></span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rank-cell">🥈</td>
+          <td><div class="sector-name">消费电子</div><div class="sector-name-sub">涨幅5.24%</div></td>
+          <td><span class="zt-badge zt-low">1家</span></td>
+          <td><span class="lianban">1只强势</span></td>
+          <td class="catalyst-cell">
+            <div>消费电子复苏+华为链催化，光学板块领涨</div>
+            <div class="catalyst-flow">
+              <span>📊 成交额: <b>363亿</b></span>
+              <span>💰 主力净流: 0亿</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rank-cell">🥉</td>
+          <td><div class="sector-name">家电零部件Ⅱ</div><div class="sector-name-sub">涨幅5.18%</div></td>
+          <td><span class="zt-badge zt-low">1家</span></td>
+          <td><span class="lianban">1只强势</span></td>
+          <td class="catalyst-cell">
+            <div>家电以旧换新政策持续催化</div>
+            <div class="catalyst-flow">
+              <span>📊 成交额: <b>362亿</b></span>
+              <span>💰 主力净流: 0亿</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rank-cell">4</td>
+          <td><div class="sector-name">通信设备</div><div class="sector-name-sub">涨幅5.18%</div></td>
+          <td><span class="zt-badge zt-low">1家</span></td>
+          <td><span class="lianban">1只强势</span></td>
+          <td class="catalyst-cell">
+            <div>通信设备板块放量上涨，5G/AI算力需求驱动</div>
+            <div class="catalyst-flow">
+              <span>📊 成交额: <b>362亿</b></span>
+              <span>💰 主力净流: <span style="color:#dc2626;font-weight:600">+0.01亿</span></span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rank-cell">5</td>
+          <td><div class="sector-name">军工电子Ⅱ</div><div class="sector-name-sub">涨幅5.17%</div></td>
+          <td><span class="zt-badge zt-low">1家</span></td>
+          <td><span class="lianban">1只强势</span></td>
+          <td class="catalyst-cell">
+            <div>消费电子复苏+华为链催化，光学板块领涨</div>
+            <div class="catalyst-flow">
+              <span>📊 成交额: <b>362亿</b></span>
+              <span>💰 主力净流: 0亿</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- === 右侧专栏 === -->
+  <div class="sidebar-card">
+    <h3>📌 龙虎榜 & 资金风向</h3>
+    <div class="insight-item">
+      <div class="insight-icon">💰</div>
+      <div class="insight-content">
+        <div class="insight-title">机构净买入TOP</div>
+        <div class="insight-text">通信设备主力净流入0.0亿</div>
+        <div class="insight-note">机构资金集中加仓通信设备板块</div>
+      </div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">🏭</div>
+      <div class="insight-content">
+        <div class="insight-title">游资主导修复</div>
+        <div class="insight-text">消费电子涨5.24%</div>
+        <div class="insight-note">游资积极做多科技方向</div>
+      </div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">📉</div>
+      <div class="insight-content">
+        <div class="insight-title">机构大幅卖出</div>
+        <div class="insight-text">防御板块遭减持</div>
+        <div class="insight-note">资金从高股息向科技切换</div>
+      </div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">🧭</div>
+      <div class="insight-content">
+        <div class="insight-title">北向资金</div>
+        <div class="insight-text">今日净流入约36亿</div>
+        <div class="insight-note">偏向业绩确定性与低位修复方向</div>
+      </div>
+    </div>
+    <div class="sidebar-footer">→ 刷新后结合热点前三、主力净流入和成交额确认次日主线。</div>
+  </div>
+
+</div>
+</div>
+
+<div class="footer">数据源: westock-data · 东方财富 · 收盘后自动更新</div>
+
+</body>
+</html>

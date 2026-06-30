@@ -61,6 +61,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             path = '/' + path.split('/', 3)[-1]
         if path == '/':
             path = '/index.html'
+        elif path == '/etf':
+            path = '/全量指数申购流入排行.html'
         filepath = os.path.normpath(os.path.join(DIR, path.lstrip('/')))
         if not filepath.startswith(DIR):
             self.send_error(403)
