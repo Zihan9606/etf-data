@@ -1,6 +1,6 @@
 {
   "date": "2026-06-30",
-  "count": 18,
+  "count": 19,
   "data": {
     "sh510300": {
       "etfName": "沪深300",
@@ -198,6 +198,17 @@
         "020603"
       ],
       "linkHoldRatio": 24.37,
+      "assumedRatio": 0.92
+    },
+    "sh515080": {
+      "etfName": "中证红利ETF招商",
+      "etfTotalAssets": 11311931438.0,
+      "totalLinkAssets": 587000000.0,
+      "linkFunds": [
+        "012643",
+        "012644"
+      ],
+      "linkHoldRatio": 4.77,
       "assumedRatio": 0.92
     }
   }
