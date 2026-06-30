@@ -86,6 +86,7 @@ tr:hover{background:#f8fafc!important}
   <div class="nav-tab" onclick="switchTab('tab-summary')">🎯 最终结论</div>
   <div class="nav-tab" onclick="switchTab('tab-watchlist')">⭐ 自选监控</div>
   <div class="nav-tab" onclick="switchTab('tab-shareholders')">📋 股东追踪</div>
+  <div class="nav-tab" onclick="switchTab('tab-qdii')">🌐 QDII额度</div>
 </div>
 
 <div class="controls" style="background:#f1f5f9;padding:10px 28px;border-bottom:1px solid #e2e8f0">
@@ -201,6 +202,14 @@ tr:hover{background:#f8fafc!important}
   </div>
 </div>
 
+<div id="tab-qdii" class="tab-content">
+  <div class="section-title">🌐 合格境内机构投资者（QDII）投资额度</div>
+  <div class="section-sub">国家外汇管理局每月发布的QDII额度审批情况</div>
+  <div id="qdiiContent">
+    <p style="color:#94a3b8;padding:40px;text-align:center">加载中...</p>
+  </div>
+</div>
+
 <div id="tipOverlay" class="tip-overlay" onclick="this.classList.remove('show')">
   <div class="tip-box">
     <button class="close-tip" onclick="document.getElementById('tipOverlay').classList.remove('show')">✕</button>
@@ -227,6 +236,7 @@ function init() {
       document.getElementById('datePicker').value = currentDate;
       renderStockFlowStatus();
       renderShareholders();
+      renderQDII();
       renderWatchlistTags();
       if (document.querySelector('#tab-rank.active')) {
         switchDate(currentDate);
@@ -850,6 +860,92 @@ function filterShareholders() {
       const total = match.reduce((s, m) => s + parseInt(m.match(/\d+/)[0]), 0);
       info.textContent = '筛选结果 ' + total + '条';
     }
+  }
+}
+
+// ========== QDII额度展示 ==========
+function renderQDII() {
+  const meta = ALL_DATA._meta;
+  const qdii = meta && meta.qdii;
+  const container = document.getElementById('qdiiContent');
+  if (!qdii || !qdii.totalQuota) {
+    container.innerHTML = '<p style="color:#94a3b8;padding:40px;text-align:center">暂无QDII数据，请先运行 collect_qdii.py</p>';
+    return;
+  }
+
+  let h = '';
+
+  // 概览卡片
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px">';
+  h += '<div class="stat-card"><div class="num" style="color:#2563eb">' + qdii.totalQuota + '</div><div class="lbl">总计(亿美元)</div></div>';
+  h += '<div class="stat-card"><div class="num">' + qdii.totalOrgs + '</div><div class="lbl">机构总数</div></div>';
+  h += '<div class="stat-card"><div class="num" style="color:#16a34a">' + (qdii.reportDate || '-') + '</div><div class="lbl">报告期</div></div>';
+  h += '<div class="stat-card"><div class="num" style="color:#f59e0b">' + (qdii.latestApproveDate || '-') + '</div><div class="lbl">最新批复</div></div>';
+  h += '</div>';
+
+  // 分类统计
+  if (qdii.categories) {
+    h += '<h4 style="margin:12px 0 8px">📊 分类统计</h4>';
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:16px">';
+    for (const [cat, val] of Object.entries(qdii.categories)) {
+      const pct = qdii.totalQuota > 0 ? (val / qdii.totalQuota * 100).toFixed(1) : 0;
+      h += '<div style="padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px">';
+      h += '<div style="font-size:11px;color:#64748b">' + cat + '</div>';
+      h += '<div style="font-size:16px;font-weight:600;color:#1e293b">' + val + '<span style="font-size:11px;color:#94a3b8;font-weight:400"> 亿</span></div>';
+      h += '<div style="font-size:11px;color:#94a3b8">占比' + pct + '%</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+
+  // 新增机构/额度变化提醒
+  const newOrgs = qdii.newOrgs || [];
+  const quotaUp = qdii.quotaIncrease || [];
+  if (newOrgs.length > 0 || quotaUp.length > 0) {
+    h += '<div class="sell-alert" style="border-left-color:#2563eb"><h3 style="color:#2563eb">🚀 最近更新</h3>';
+    if (newOrgs.length > 0) {
+      h += '<h4 style="margin:8px 0;font-size:13px">✨ 新晋机构 (' + newOrgs.length + '家)</h4>';
+      h += '<div class="backtest-box"><table style="font-size:12px"><thead><tr><th>机构名称</th><th>批准日期</th><th>额度(亿美元)</th></tr></thead><tbody>';
+      for (const o of newOrgs) {
+        h += '<tr><td>' + o.name + '</td><td>' + o.approveDate + '</td><td style="font-weight:600;color:#2563eb">' + o.quota + '</td></tr>';
+      }
+      h += '</tbody></table></div>';
+    }
+    if (quotaUp.length > 0) {
+      h += '<h4 style="margin:8px 0;font-size:13px">📈 额度提升 (' + quotaUp.length + '家)</h4>';
+      h += '<div class="backtest-box"><table style="font-size:12px"><thead><tr><th>机构名称</th><th>原额度</th><th>新额度</th><th>增加</th></tr></thead><tbody>';
+      for (const q of quotaUp) {
+        h += '<tr><td>' + q.name + '</td><td>' + q.oldQuota + '亿</td><td>' + q.newQuota + '亿</td><td style="font-weight:600;color:#16a34a">+' + q.increase + '亿</td></tr>';
+      }
+      h += '</tbody></table></div>';
+    }
+    h += '</div>';
+  }
+
+  // 全部机构列表（可搜索）
+  h += '<h4 style="margin:16px 0 8px">🏛️ 全部机构清单 <span class="count-badge">' + qdii.totalOrgs + '家</span></h4>';
+  h += '<input type="text" id="qdiiSearch" placeholder="搜索机构名称..." oninput="filterQDII()" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;width:100%;max-width:400px;margin-bottom:10px">';
+  h += '<div class="table-wrap"><table style="font-size:12px" id="qdiiTable"><thead><tr>';
+  h += '<th>序号</th><th>机构名称</th><th>最新批准日期</th><th>累计批准额度(亿美元)</th></tr></thead><tbody id="qdiiTbody">';
+
+  const records = qdii.allRecords || [];
+  // 按额度降序
+  records.sort((a, b) => b.quota - a.quota);
+  for (const r of records) {
+    h += '<tr class="qdii-row"><td>' + r.rank + '</td><td class="name-cell">' + r.name + '</td><td>' + r.approveDate + '</td><td style="font-weight:600">' + r.quota + '</td></tr>';
+  }
+  h += '</tbody></table></div>';
+
+  h += '<div class="footnote" style="margin-top:16px">📅 数据来源: 国家外汇管理局 · ' + (qdii.reportDate || '') + ' · 更新于 ' + (qdii.fetchedAt || '') + '</div>';
+  container.innerHTML = h;
+}
+
+// QDII搜索过滤
+function filterQDII() {
+  const q = document.getElementById('qdiiSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('#qdiiTbody tr');
+  for (const row of rows) {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
   }
 }
 
