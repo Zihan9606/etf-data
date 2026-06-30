@@ -742,16 +742,22 @@ function renderShareholders() {
   const meta = ALL_DATA._meta;
   const sh = meta && meta.shareholders;
   const container = document.getElementById('shareholderContent');
-  if (!sh || !sh.shareholders || Object.keys(sh.shareholders).length === 0) {
+  if (!sh || !sh.allEntries || sh.allEntries.length === 0) {
     container.innerHTML = '<p style="color:#94a3b8;padding:40px;text-align:center">暂无股东数据，请先运行 collect_shareholders.py</p>';
     return;
   }
 
   let h = '';
 
+  // 事件提醒
+  if (sh.alerts && sh.alerts.length > 0) {
+    h += '<div class="sell-alert"><h3>🚨 重要股东变动 (' + sh.alerts.length + '条)</h3>';
+    h += '<div style="font-size:11px;line-height:1.6">' + sh.alerts.slice(0, 10).map(a => '📌 ' + a).join('<br>') + '</div></div>';
+  }
+
   // 筛选栏
-  const allDirections = ['全部', '增持', '减持', '持平', '新进'];
-  const allCategories = ['全部', '社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '其他'];
+  const allDirections = ['全部', '增持', '减持', '不变', '新进'];
+  const allCategories = ['全部', '社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '个人', '其他'];
   h += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">';
   h += '<label style="font-size:12px;color:#475569">股东类型:</label>';
   h += '<select id="shCatFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
@@ -761,64 +767,41 @@ function renderShareholders() {
   h += '<select id="shDirFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
   for (const d of allDirections) h += '<option value="' + d + '">' + d + '</option>';
   h += '</select>';
-  // 历史季度选择
-  const quarters = sh.history ? Object.keys(sh.history).sort().reverse() : [];
-  if (quarters.length > 0) {
-    h += '<label style="font-size:12px;color:#475569;margin-left:8px">数据季度:</label>';
-    h += '<select id="shQuarterFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
-    for (const q of quarters) h += '<option value="' + q + '">' + q + '</option>';
-    h += '</select>';
-    h += '<span style="font-size:11px;color:#94a3b8">共' + quarters.length + '个季度</span>';
-  }
+  h += '<span style="font-size:11px;color:#94a3b8;margin-left:8px">共' + sh.allEntries.length + '条数据</span>';
   h += '</div>';
 
-  // 数据展示区
   h += '<div id="shTableContainer">';
-  h += _renderShTable(sh, '社保基金', '全部', quarters[0] || '');
+  h += _renderShTable(sh, '全部', '全部');
   h += '</div>';
 
-  h += '<div class="footnote" style="margin-top:16px">📅 数据更新: ' + (sh.date || '未知') + ' · 数据源: 东方财富F10 季度报告 · 显示近2季度对比</div>';
+  h += '<div class="footnote" style="margin-top:16px">📅 数据来源: 东方财富F10 季度报告 · 报告期: ' + (sh.date || '未知') + '</div>';
   container.innerHTML = h;
 }
 
-// 股东表渲染核心 (被filterShareholders调用)
-function _renderShTable(sh, catFilter, dirFilter, quarter) {
-  // 根据季度选择数据源
-  let dataSource;
-  if (quarter && sh.history && sh.history[quarter]) {
-    dataSource = sh.history[quarter];
-  } else {
-    dataSource = sh.shareholders;
-  }
-  if (!dataSource) return '<p style="color:#94a3b8;padding:20px;text-align:center">该季度暂无数据</p>';
-
+function _renderShTable(sh, catFilter, dirFilter) {
   let h = '';
-  const catOrder = ['社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '其他'];
+  const catOrder = ['社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '个人', '其他'];
   let hasAny = false;
   for (const cat of catOrder) {
     if (catFilter !== '全部' && cat !== catFilter) continue;
-    const items = [];
-    for (const [code, holders] of Object.entries(dataSource)) {
-      for (const hh of holders) {
-        const hCat = hh.category || '其他';
-        if (hCat !== cat) continue;
-        if (dirFilter !== '全部' && hh.direction !== dirFilter && !(dirFilter === '新进' && hh.change === '新进')) continue;
-        items.push({ stock: code, holder: hh });
-      }
+    const items = (sh.shareholders && sh.shareholders[cat]) || [];
+    let filtered = items;
+    if (dirFilter !== '全部') {
+      filtered = items.filter(i => i.direction === dirFilter);
     }
-    if (items.length === 0) continue;
+    if (filtered.length === 0) continue;
     hasAny = true;
-    h += '<h4 style="margin:16px 0 8px">' + cat + ' <span class="count-badge">' + items.length + '条</span></h4>';
+    h += '<h4 style="margin:16px 0 8px">' + cat + ' <span class="count-badge">' + filtered.length + '条</span></h4>';
     h += '<div class="backtest-box"><table style="font-size:12px"><thead><tr><th>股票</th><th>股东名称</th><th>持股数</th><th>持股比例</th><th>变动方向</th><th>排名</th></tr></thead><tbody>';
-    for (const item of items) {
-      const dirCls = item.holder.direction === '增持' ? 'dir-in' : (item.holder.direction === '减持' ? 'dir-out' : '');
+    for (const item of filtered.slice(0, 30)) {
+      const dirCls = item.direction === '增持' ? 'dir-in' : (item.direction === '减持' ? 'dir-out' : '');
       h += '<tr>';
-      h += '<td><code>' + item.stock + '</code></td>';
-      h += '<td>' + item.holder.name + '</td>';
-      h += '<td>' + (item.holder.holdNum ? (item.holder.holdNum / 10000).toFixed(0) + '万' : '-') + '</td>';
-      h += '<td>' + (item.holder.holdRatio ? item.holder.holdRatio.toFixed(2) + '%' : '-') + '</td>';
-      h += '<td><span class="dir-badge ' + dirCls + '">' + (item.holder.direction || '-') + '</span></td>';
-      h += '<td>第' + item.holder.rank + '</td>';
+      h += '<td><code>' + item.stockCode + '</code></td>';
+      h += '<td>' + item.holderName + '</td>';
+      h += '<td>' + (item.holdNum ? (item.holdNum / 10000).toFixed(0) + '万' : '-') + '</td>';
+      h += '<td>' + (item.holdRatio ? item.holdRatio.toFixed(2) + '%' : '-') + '</td>';
+      h += '<td><span class="dir-badge ' + dirCls + '">' + (item.direction || '-') + '</span></td>';
+      h += '<td>第' + item.rank + '</td>';
       h += '</tr>';
     }
     h += '</tbody></table></div>';
@@ -827,16 +810,14 @@ function _renderShTable(sh, catFilter, dirFilter, quarter) {
   return h;
 }
 
-// 筛选函数(由onchange触发)
 function filterShareholders() {
   const catFilter = document.getElementById('shCatFilter').value;
   const dirFilter = document.getElementById('shDirFilter').value;
-  const quarter = document.getElementById('shQuarterFilter') ? document.getElementById('shQuarterFilter').value : '';
   const meta = ALL_DATA._meta;
   const sh = meta && meta.shareholders;
   if (!sh) return;
   const container = document.getElementById('shTableContainer');
-  container.innerHTML = _renderShTable(sh, catFilter, dirFilter, quarter);
+  container.innerHTML = _renderShTable(sh, catFilter, dirFilter);
 }
 
 // ========== 初始化: 从JSON文件加载 ==========

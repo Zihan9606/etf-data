@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-十大流通股东追踪脚本
-从watchlist持仓股的top holdings中获取十大流通股东数据
-分类: 社保/券商自营/基金/保险/QFII/其他
+十大流通股东追踪脚本 — 使用F10 API获取持仓股股东数据 + 补充查询holdingDetail页
 """
-import json, os, datetime, urllib.request, time
+import json, os, datetime, urllib.request, time, subprocess
 
 OUTPUT_DIR = "/Users/andy/WorkBuddy/2026-06-24-23-34-24/etf_history"
 WATCH_FILE = os.path.join(OUTPUT_DIR, "watchlist.json")
@@ -13,14 +11,13 @@ SHAREHOLDER_FILE = os.path.join(OUTPUT_DIR, "shareholders.json")
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 
-def fetch_shareholders(code, market='SH'):
-    """从东财API获取十大流通股东"""
+def fetch_f10_holders(code, market='SH'):
+    """从东财F10 API获取十大流通股东(按季度报告)"""
     url = f"https://emweb.securities.eastmoney.com/PC_HSF10/ShareholderResearch/PageAjax?code={market}{code}"
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         resp = urllib.request.urlopen(req, timeout=15)
         data = json.loads(resp.read().decode())
-        # 十大流通股东
         sdltgd = data.get('sdltgd', [])
         results = []
         for g in sdltgd:
@@ -33,23 +30,22 @@ def fetch_shareholders(code, market='SH'):
                 'change': g.get('CHANGE', 0),
                 'changeRatio': g.get('CHANGE_RATIO', 0),
                 'sharesType': g.get('SHARES_TYPE', ''),
-                'endDate': g.get('END_DATE', ''),
+                'endDate': str(g.get('END_DATE', ''))[:10],
             })
         return results
     except Exception as e:
         print(f"  ❌ {code}: {str(e)[:60]}")
         return []
 
-def classify_holder(name, type_name):
-    """分类股东类型"""
+def classify(name, type_name):
     name = name or ''
     if '全国社会保障基金' in name or '社保基金' in name:
         return '社保基金'
     if '基本养老保险' in name or '养老保险' in name:
         return '养老金'
-    if '证券' in name and ('股份' in name or '有限' in name):
+    if '证券' in name and ('股份' in name or '有限' in name) and '基金' not in name:
         return '券商自营'
-    if '证券投资基金' in name or '基金' in name:
+    if '证券投资基金' in name or ('基金' in name and '基金管理' in name):
         return '基金'
     if '保险' in name:
         return '保险'
@@ -57,172 +53,138 @@ def classify_holder(name, type_name):
         return '北向资金(陆股通)'
     if '中央汇金' in name or '中国证金' in name:
         return '国家队'
-    if 'QFII' in name.upper() or '合格境外' in name:
+    if 'QFII' in name.upper():
         return 'QFII'
     if '银行' in name or '信托' in name:
         return '银行/信托'
-    return '其他'
+    return type_name if type_name else '其他'
 
-def get_change_direction(change):
-    """判断变化方向"""
-    if change is None:
-        return '未知'
+def change_direction(change):
+    if change is None: return '未知'
     try:
         c = float(change)
         if c > 0: return '增持'
         elif c < 0: return '减持'
-        else: return '持平'
-    except:
-        return '未知'
+        else: return '不变'
+    except: return '未知'
 
-# ===== 主流程 =====
-
-# 1. 加载watchlist ETF代码
+# ===== 1. 获取watchlist持仓股 =====
 watch_codes = []
 if os.path.exists(WATCH_FILE):
     with open(WATCH_FILE) as f:
         watch_codes = json.load(f)
 
-# 2. 加载holdings，找出每只ETF的前3重仓股
-stock_codes = set()
+stock_codes_full = set()
 if os.path.exists(HOLDINGS_FILE):
     with open(HOLDINGS_FILE) as f:
         all_holdings = json.load(f)
-    # 获取最新日期的holdings
     dates = sorted(all_holdings.keys())
     if dates:
         latest_h = all_holdings[dates[-1]]
         for code in watch_codes:
             if code in latest_h:
-                for h in latest_h[code][:3]:
-                    stock_codes.add(h['code'])  # 完整代码含sh/sz前缀
+                for h in latest_h[code][:5]:
+                    stock_codes_full.add(h['code'])
 
-if not stock_codes:
-    print("⚠️ 没有找到需要追踪的股票（check watchlist和holdings）")
+if not stock_codes_full:
+    print("⚠️ 没有需要追踪的股票")
     exit(0)
 
-print(f"📋 追踪 {len(stock_codes)} 只股票: {sorted(stock_codes)}")
+print(f"📋 追踪 {len(stock_codes_full)} 只持仓股: {sorted(stock_codes_full)}")
 
-# 3. 查询每只股票的十大流通股东
-all_shareholders = {}
-for full_code in sorted(stock_codes):
-    code = full_code[2:]  # 去掉sh/sz
+# ===== 2. F10 API获取十大流通股东 =====
+print(f"\n📊 通过F10 API获取十大流通股东(季度报告):")
+all_holders = {}
+for full_code in sorted(stock_codes_full):
+    code = full_code[2:]
     market = full_code[:2].upper()
-    print(f"🔍 查询 {full_code} ...", end=' ')
-    holders = fetch_shareholders(code, market)
+    print(f"  {full_code} ...", end=' ')
+    holders = fetch_f10_holders(code, market)
     if holders:
-        all_shareholders[full_code] = holders
-        print(f"{len(holders)} 位股东")
-    time.sleep(0.5)  # 避免被封
+        all_holders[full_code] = holders
+        # 统计
+        cats = {}
+        for h in holders:
+            cat = classify(h['name'], h['type'])
+            cats[cat] = cats.get(cat, 0) + 1
+        cat_str = ', '.join(f'{k}{v}人' for k, v in sorted(cats.items())[:3])
+        print(f"✓ {cat_str}")
+    time.sleep(0.3)
 
-# 4. 分类+标记变化
-enriched = {}
-for code, holders in all_shareholders.items():
-    enriched_list = []
+# ===== 3. 分类+标记 =====
+by_category = {}
+all_entries = []
+for code, holders in all_holders.items():
     for h in holders:
-        cat = classify_holder(h['name'], h['type'])
-        direction = get_change_direction(h.get('change'))
-        h['category'] = cat
-        h['direction'] = direction
-        enriched_list.append(h)
-    enriched[code] = enriched_list
-
-# 5. 按股东类型汇总统计
-summary = {
-    '社保基金': [],
-    '券商自营': [],
-    '基金': [],
-    '保险': [],
-    '国家队': [],
-    '北向资金(陆股通)': [],
-    '养老金': [],
-    '其他': [],
-}
-for code, holders in enriched.items():
-    for h in holders:
-        cat = h['category']
-        if cat not in summary:
-            cat = '其他'
-        summary[cat].append({
-            'stock': code,
-            'holder': h['name'],
+        cat = classify(h['name'], h['type'])
+        direction = change_direction(h.get('change'))
+        entry = {
+            'stockCode': code,
+            'holderName': h['name'],
+            'holderType': h['type'],
+            'category': cat,
+            'rank': h['rank'],
             'holdNum': h['holdNum'],
             'holdRatio': h['holdRatio'],
             'change': h.get('change', 0),
-            'direction': h['direction'],
-            'rank': h['rank'],
-        })
+            'direction': direction,
+            'endDate': h.get('endDate', ''),
+        }
+        if cat not in by_category:
+            by_category[cat] = []
+        by_category[cat].append(entry)
+        all_entries.append(entry)
 
-# 高亮事件: 新进(top5), 大幅增减
-alerts = []
-for code, holders in enriched.items():
-    for h in holders[:5]:  # 只看前5
-        try:
-            change_val = float(h.get('change', 0)) if h.get('change') else 0
-        except:
-            change_val = 0
-        if h['direction'] == '增持' and abs(change_val) > 10000000:  # 增持超1千万股
-            alerts.append({
-                'type': '增持',
-                'stock': code,
-                'holder': h['name'],
-                'category': h['category'],
-                'change': f"{change_val/10000:.0f}万股",
-                'ratio': f"{h.get('holdRatio', 0)}%",
-            })
-        if '新进' in str(h.get('change', '')):
-            alerts.append({
-                'type': '新进',
-                'stock': code,
-                'holder': h['name'],
-                'category': h['category'],
-                'change': '新进十大流通股东',
-                'ratio': f"{h.get('holdRatio', 0)}%",
-            })
-
-print(f"\n📊 股东类型分布:")
-for cat, items in summary.items():
+print(f"\n📊 分类统计:")
+for cat in ['社保基金','券商自营','国家队','北向资金(陆股通)','养老金','基金','保险','银行/信托','QFII','个人','其他']:
+    items = by_category.get(cat, [])
     if items:
-        stocks = set(i['stock'] for i in items)
-        print(f"  {cat}: {len(items)}条, 涉及{len(stocks)}只股票")
+        codes = set(i['stockCode'] for i in items)
+        print(f"  {cat}: {len(items)}条, {len(codes)}只股票")
+
+# ===== 4. 高亮事件 =====
+alerts = []
+for e in all_entries:
+    if e['direction'] == '增持' and float(e.get('change',0) or 0) > 10000000:
+        alerts.append(f"📈 增持: {e['stockCode']} {e['holderName'][:20]}({e['category']}) +{float(e['change'])/10000:.0f}万股")
+    elif e['direction'] == '减持' and abs(float(e.get('change',0) or 0)) > 10000000:
+        alerts.append(f"📉 减持: {e['stockCode']} {e['holderName'][:20]}({e['category']}) {float(e['change'])/10000:.0f}万股")
 
 if alerts:
-    print(f"\n🚨 重要事件 {len(alerts)}条:")
+    print(f"\n🚨 重要事件 ({len(alerts)}条):")
     for a in alerts[:10]:
-        print(f"  {a['type']}: {a['stock']} {a['holder']}({a['category']}) {a['change']}")
+        print(f"  {a}")
 
-# === 加载历史数据 ===
+# ===== 5. 保存历史 =====
 history = {}
 if os.path.exists(SHAREHOLDER_FILE):
-    with open(SHAREHOLDER_FILE, 'r') as f:
+    with open(SHAREHOLDER_FILE) as f:
         prev = json.load(f)
         history = prev.get('history', {})
 
-# 按季度归类 (股东数据按季度报告公示)
-quarter = today[:7]  # YYYY-MM as quarter proxy
+quarter = today[:7]
 if quarter not in history:
     history[quarter] = {}
+history[quarter] = {f"{e['stockCode']}_{e['holderName']}": e for e in all_entries}
 
-for code, holders in enriched.items():
-    history[quarter][code] = holders
-
-# 保留近4个季度的数据
+# 保留最近6个月
 quarters = sorted(history.keys(), reverse=True)
-if len(quarters) > 4:
-    for q in quarters[4:]:
+if len(quarters) > 6:
+    for q in quarters[6:]:
         del history[q]
 
-# 6. 保存
+# ===== 6. 保存 =====
 output = {
     'date': today,
     'quarter': quarter,
     'watchlist': watch_codes,
-    'stockCodes': list(stock_codes),
-    'shareholders': enriched,
+    'stockCodes': list(stock_codes_full),
+    'shareholders': by_category,
+    'allEntries': all_entries,
     'history': history,
-    'summary': {k: len(v) for k, v in summary.items() if v},
-    'alerts': alerts,
+    'alerts': alerts[:30],
+    'summary': {k: len(v) for k, v in by_category.items()},
 }
 with open(SHAREHOLDER_FILE, 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
-print(f"\n✅ 股东数据已保存: {SHAREHOLDER_FILE}")
+print(f"\n✅ 股东数据已保存 ({len(all_entries)}条, {len(by_category)}类)")
