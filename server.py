@@ -99,6 +99,34 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 if __name__ == '__main__':
+    # 启动时自动检查并更新数据
+    print("🔍 检查数据时效性...")
+    gen_script = os.path.join(DIR, "gen_analysis_html.py")
+    if os.path.exists(gen_script):
+        import subprocess, datetime
+        data_file = os.path.join(DIR, "etf_history", "etf_data.json")
+        need_update = True
+        if os.path.exists(data_file):
+            try:
+                with open(data_file, 'r') as f:
+                    data = json.load(f)
+                existing_dates = set(data.get('dates', {}).keys())
+                today_str = datetime.date.today().strftime("%Y-%m-%d")
+                if today_str in existing_dates:
+                    need_update = False
+            except:
+                pass
+        
+        if need_update:
+            print("📡 数据需要更新，正在采集最新数据...")
+            r = subprocess.run([sys.executable, gen_script], capture_output=True, text=True, timeout=120)
+            for line in r.stdout.strip().split('\n')[-5:]:
+                print(f"  {line}")
+            if r.returncode != 0:
+                print(f"  ⚠️ 生成异常: {r.stderr[:100]}")
+        else:
+            print("✅ 今日数据已存在，无需更新")
+    
     # 初始化watchlist.json
     if not os.path.exists(WATCH_FILE):
         os.makedirs(os.path.dirname(WATCH_FILE), exist_ok=True)

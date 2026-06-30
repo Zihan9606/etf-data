@@ -4,8 +4,9 @@ description: >
   全市场ETF份额申购流入分析。当用户需要查询指数ETF申购流入排行、
   份额变化数据、资金净流入分析时使用此技能。支持宽基/行业/主题/
   跨境/债券全类ETF分析, 查询当日份额、份额变化、资金流、K线走势等。
-  还支持自选ETF监控、十大流通股东追踪(QDII/社保/券商)、QDII额度查询、
-  成交活跃TOP3重仓股展示。全自动数据采集+HTML可视化。
+  还支持自选ETF监控、十大流通股东追踪(社保/券商/QFII)、QDII额度查询、
+  成交活跃TOP3重仓股展示、ETF联接基金持有份额占比、热点板块速览报告。
+  全自动数据采集(SH 15:05定时+打开页面时自动检查)+首页模块入口架构。
 agent_created: true
 ---
 
@@ -477,11 +478,56 @@ gen_analysis_html.py
 ```
 定时任务(交易日15:05) → daily_collect.py → gen_analysis_html.py → 全数据更新
 
-```bash
-cd /Users/andy/.workbuddy/skills/etf-share-flow-analysis
-/Users/andy/.workbuddy/binaries/python/envs/default/bin/python scripts/analyze.py
+**数据时效检查机制:**
+- `server.py` 启动时自动检查 `etf_data.json` 中是否有今日数据, 无则调用 `gen_analysis_html.py`
+- `gen_analysis_html.py` 启动时先检查CSV今日数据是否存在, 无则先调 `daily_collect.py`
+- `gen_analysis_html.py` 自动前置采集股东(`collect_shareholders.py`)+QDII(`collect_qdii.py`)+联接基金(`collect_link_ratio.py`)
+- 每次修改代码后, 必须: 重新生成 → 重启server → preview_url打开页面
+
+### 13. 首页 + 模块入口架构 (index.html)
+
+生成脚本: `gen_index.py`
+- 基于westock-data的`board`命令实时数据生成热点板块速览报告
+- 支持模块入口: ETF模块 + 个股模块(预留)
+- 首页主要展示:
+  - 🔥 热点板块TOP5表格(涨停数/最高连板/主力资金流)
+  - 📌 龙虎榜&资金风向专栏(机构买卖/游资/北向资金)
+- `server.py` 增加了 `/etf` 路径指向ETF分析页, `/` 指向 `index.html`
+
+### 14. ETF联接基金持有份额占比
+
+数据源: 天天基金网(东方财富)基金详情页
+```python
+# 从基金详情页提取总资产
+url = f'https://fund.eastmoney.com/{fund_code}.html'
+# 搜索 "规模</a>：X.XX亿元" 提取基金总资产
 ```
-输出文本版量化和定性双重结论。
+
+公式: `P_link = A_link × 0.92 / A_etf`
+- A_link: 联接基金总资产(从天天基金详情页提取)
+- A_etf: ETF总资产(shares×nav)
+- 0.92: 联接基金持有目标ETF的典型比例(实际90-95%)
+
+脚本: `collect_link_ratio.py`
+- ETF → 联接基金代码硬编码映射
+- 支持A/C类份额合并计算
+- 输出: `etf_history/link_ratio.json`
+
+已覆盖19只ETF(含红利、宽基、行业、跨境等), 后续可持续补充映射。
+
+### 15. 数据源汇总
+
+| 数据 | 数据源 | 获取方式 | 脚本 |
+|:----|:------|:--------|:----|
+| ETF份额/资金流 | westock-data-clawhub (腾讯自选股数据) | `etf` 命令批量查询(139只ETF) | daily_collect.py |
+| ETF持仓(前20重仓) | westock-data-clawhub | etf命令输出尾部"基金经理"之后的持仓表 | daily_collect.py |
+| 持仓股票行情/成交额 | westock-data-clawhub | `etf` 命令查询个股(带sh/sz前缀) | daily_collect.py |
+| 板块行情+资金流 | westock-data-clawhub | `board` 命令 | gen_index.py |
+| 龙虎榜/热点 | westock-data-clawhub | `hot stock/board` 命令 | (预留) |
+| 十大流通股东(季度) | 东方财富F10 API | `PC_HSF10/ShareholderResearch/PageAjax` | collect_shareholders.py |
+| 联接基金总资产 | 天天基金网(东方财富) | 基金详情页HTML解析 | collect_link_ratio.py |
+| QDII投资额度 | 国家外汇管理局(SAFE) | 官网PDF下载+pdftotext | collect_qdii.py |
+| 基金历史规模 | 天天基金pingzhongdata JS | `Data_grandTotal` 变量 | (备用方案) |
 
 ### 6. 结果呈现
 

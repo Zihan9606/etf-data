@@ -11,6 +11,28 @@ import subprocess, json, os, csv, sys
 
 SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# === 前置: 检查今日ETF数据是否已采集 ===
+today_str_check = datetime.date.today().strftime("%Y-%m-%d")
+csv_file = os.path.join(SCRIPTS_DIR, "etf_history", "etf_daily.csv")
+daily_script = os.path.join(SCRIPTS_DIR, "daily_collect.py")
+need_collect = True
+if os.path.exists(csv_file):
+    try:
+        with open(csv_file, 'r') as f:
+            last_line = f.readlines()[-1] if f.readlines() else ''
+            if today_str_check in last_line[:10]:
+                need_collect = False
+    except:
+        pass
+
+if need_collect and os.path.exists(daily_script):
+    print(f"📡 今日({today_str_check})ETF数据未采集，自动采集...")
+    r = subprocess.run([sys.executable, daily_script], capture_output=True, text=True, timeout=120)
+    for line in r.stdout.strip().split('\n')[-5:]:
+        print(f"  {line}")
+else:
+    print(f"✅ 今日ETF数据已存在")
+
 # === 前置: 自动更新股东数据和QDII数据 ===
 print("📋 自动更新股东数据...")
 sh_script = os.path.join(SCRIPTS_DIR, "collect_shareholders.py")
