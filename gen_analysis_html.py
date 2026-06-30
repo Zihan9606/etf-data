@@ -454,6 +454,8 @@ tr:hover{{background:#f8fafc!important}}
 .overlap-box{{padding:20px;border-radius:10px;background:linear-gradient(135deg,#fefce8,#fef9c3);border:2px solid #f59e0b;margin:16px 0}}
 .overlap-box h3{{font-size:16px;color:#92400e;margin-bottom:8px}}
 .backtest-box{{padding:16px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;margin:12px 0}}
+.back-link{{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#475569;text-decoration:none;transition:all .2s;margin-bottom:12px}}
+.back-link:hover{{background:#e2e8f0;color:#1e293b;border-color:#94a3b8}}
 .backtest-box table{{margin:0}}
 .footnote{{font-size:11px;color:#94a3b8;margin-top:16px;padding:12px;border-top:1px solid #e2e8f0}}
 .tip-trigger{{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:#cbd5e1;color:#fff;font-size:8px;font-weight:600;cursor:pointer;margin-left:2px;vertical-align:super}}
@@ -481,6 +483,7 @@ tr:hover{{background:#f8fafc!important}}
 <div class="header">
   <h1>🏦 全市场ETF申购流入全面分析</h1>
   <p>覆盖{len(dates)}个交易日 · {len(all_data)}个指数ETF · 39列全字段 · 支持日期切换查看历史</p>
+  <a href=\"index.html\" class=\"back-link\">← 返回首页</a>
 </div>
 
 <div class="nav-tabs">
