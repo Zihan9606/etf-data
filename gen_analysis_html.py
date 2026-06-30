@@ -7,7 +7,7 @@
   - 使用方式: cd工作目录 && python3 server.py → 浏览器打开 localhost:8080
   - 好处: 数据更新后只需重新运行本脚本, HTML自动读取新数据, 无需改HTML
 """
-import subprocess, json, os, csv, sys
+import subprocess, json, os, csv, sys, datetime
 
 SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,15 +19,15 @@ need_collect = True
 if os.path.exists(csv_file):
     try:
         with open(csv_file, 'r') as f:
-            last_line = f.readlines()[-1] if f.readlines() else ''
-            if today_str_check in last_line[:10]:
+            lines = f.readlines()
+            if lines and today_str_check in lines[-1][:10]:
                 need_collect = False
     except:
         pass
 
 if need_collect and os.path.exists(daily_script):
     print(f"📡 今日({today_str_check})ETF数据未采集，自动采集...")
-    r = subprocess.run([sys.executable, daily_script], capture_output=True, text=True, timeout=120)
+    r = subprocess.run([sys.executable, daily_script], capture_output=True, text=True, timeout=180)
     for line in r.stdout.strip().split('\n')[-5:]:
         print(f"  {line}")
 else:
@@ -143,6 +143,14 @@ all_holdings = {}  # date -> {code -> [{code,name,weight,chgPct}]}
 if os.path.exists(HOLDINGS_FILE):
     with open(HOLDINGS_FILE, 'r', encoding='utf-8') as f:
         all_holdings = json.load(f)
+# 读取联接基金占比数据
+LINK_FILE = os.path.join(os.path.dirname(CSV_FILE), "link_ratio.json")
+link_ratio = {}
+if os.path.exists(LINK_FILE):
+    with open(LINK_FILE, 'r', encoding='utf-8') as f:
+        link_data = json.load(f)
+        link_ratio = link_data.get('data', {})
+        print(f"📊 联接基金占比: {len(link_ratio)}只ETF")
 # 读取股东数据
 SH_FILE = os.path.join(os.path.dirname(CSV_FILE), "shareholders.json")
 shareholders_data = {}
@@ -298,6 +306,7 @@ for d in dates:
             'stock': dd['stock'], 'prlist': dd['prlist'], 'indexChg': dd['indexChg'],
             'index1Y': dd['index1Y'], 'ytdMdd': round(dd['ytdMdd'],1), 'isT0': dd['isT0'],
             'dir': fdir, 'sig': sig, 'desc': desc, 'flow10': round(dd['flow']*10,0),
+            'linkRatio': link_ratio.get(dd.get('main_code',''), {}).get('linkHoldRatio', 0),
         }
         # 加入持仓数据
         day_holdings = all_holdings.get(d, {})
@@ -561,6 +570,7 @@ html += """</select>
     <th>月收益<span class="tip-trigger" onclick="showTip('月收益','近1个月收益率(%)')">?</span></th>
     <th>换手率<span class="tip-trigger" onclick="showTip('换手率','当日成交量占总份额比例(%)')">?</span></th>
     <th>T+0<span class="tip-trigger" onclick="showTip('T+0标记','是否支持T+0交易,✓=是,✗=否')">?</span></th>
+    <th class="new-field">联接占比<span class="tip-trigger" onclick="showTip('联接占比','场外ETF联接基金持有本ETF份额的占比(%),越高说明散户/定投资金占比越大')">?</span></th>
     <th class="new-field">成交活跃TOP3<span class="tip-trigger" onclick="showTip('成交活跃TOP3','前3大成交额重仓股(按今日成交金额排序)及涨跌幅')">?</span></th>
   </tr></thead><tbody id="tableBody">
   </tbody></table></div>
@@ -741,6 +751,14 @@ function renderTable(date, dd) {
     h += '<td>' + (r.r1m > 0 ? '+' : '') + r.r1m.toFixed(1) + '%</td>';
     h += '<td>' + r.turnover.toFixed(1) + '%</td>';
     h += '<td>' + (r.isT0 || '-') + '</td>';
+    // 联接占比
+    const lr = r.linkRatio;
+    if (lr && lr > 0) {
+      const lrCls = lr > 20 ? 'color:#2563eb;font-weight:600' : (lr > 10 ? 'color:#475569;font-weight:500' : 'color:#94a3b8');
+      h += '<td style="' + lrCls + ';font-size:12px">' + lr.toFixed(1) + '%</td>';
+    } else {
+      h += '<td style="color:#e2e8f0;font-size:11px">-</td>';
+    }
     // 成交活跃TOP3 (按成交金额排序)
     h += '<td class="holdings-cell" style="font-size:11px">';
     if (r.holdings && r.holdings.length > 0) {

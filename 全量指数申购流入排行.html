@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ETF申购流入全面分析 - 2026-06-30</title>
+<title>ETF申购流入全面分析 - 2026-07-01</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -78,7 +78,7 @@ tr:hover{background:#f8fafc!important}
 
 <div class="header">
   <h1>🏦 全市场ETF申购流入全面分析</h1>
-  <p>覆盖5个交易日 · 6个指数ETF · 39列全字段 · 支持日期切换查看历史</p>
+  <p>覆盖6个交易日 · 7个指数ETF · 39列全字段 · 支持日期切换查看历史</p>
   <a href="index.html" class="back-link">← 返回首页</a>
 </div>
 
@@ -94,7 +94,7 @@ tr:hover{background:#f8fafc!important}
 
 <div class="controls" style="background:#f1f5f9;padding:10px 28px;border-bottom:1px solid #e2e8f0">
   <label style="font-size:12px;font-weight:500;color:#475569">📅 选择日期:</label>
-  <select id="datePicker" onchange="switchDate(this.value)" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-weight:500"><option value="2026-06-24">2026-06-24</option><option value="2026-06-25">2026-06-25</option><option value="2026-06-26">2026-06-26</option><option value="2026-06-29">2026-06-29</option><option value="2026-06-30" selected>2026-06-30</option></select>
+  <select id="datePicker" onchange="switchDate(this.value)" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;font-weight:500"><option value="2026-06-24">2026-06-24</option><option value="2026-06-25">2026-06-25</option><option value="2026-06-26">2026-06-26</option><option value="2026-06-29">2026-06-29</option><option value="2026-06-30">2026-06-30</option><option value="2026-07-01" selected>2026-07-01</option></select>
   <span id="dateInfo" style="font-size:12px;color:#64748b;margin-left:6px"></span>
 </div>
 
@@ -131,6 +131,7 @@ tr:hover{background:#f8fafc!important}
     <th>月收益<span class="tip-trigger" onclick="showTip('月收益','近1个月收益率(%)')">?</span></th>
     <th>换手率<span class="tip-trigger" onclick="showTip('换手率','当日成交量占总份额比例(%)')">?</span></th>
     <th>T+0<span class="tip-trigger" onclick="showTip('T+0标记','是否支持T+0交易,✓=是,✗=否')">?</span></th>
+    <th class="new-field">联接占比<span class="tip-trigger" onclick="showTip('联接占比','场外ETF联接基金持有本ETF份额的占比(%),越高说明散户/定投资金占比越大')">?</span></th>
     <th class="new-field">成交活跃TOP3<span class="tip-trigger" onclick="showTip('成交活跃TOP3','前3大成交额重仓股(按今日成交金额排序)及涨跌幅')">?</span></th>
   </tr></thead><tbody id="tableBody">
   </tbody></table></div>
@@ -225,7 +226,7 @@ tr:hover{background:#f8fafc!important}
 // HTML 不内置任何数据, 页面启动时自动 fetch
 // 数据更新后重新运行 gen_analysis_html.py 即可, 浏览器刷新即得最新
 let ALL_DATA = {};
-let currentDate = '2026-06-30';
+let currentDate = '2026-07-01';
 
 function init() {
   // 从相对路径加载数据JSON (与HTML同服务器的etf_history/etf_data.json)
@@ -235,7 +236,7 @@ function init() {
       ALL_DATA = data.dates;
       ALL_DATA._meta = data;  // stockFlow等元数据
       const keys = Object.keys(ALL_DATA).sort();
-      currentDate = keys.pop() || '2026-06-30';
+      currentDate = keys.pop() || '2026-07-01';
       document.getElementById('datePicker').value = currentDate;
       renderStockFlowStatus();
       renderShareholders();
@@ -308,6 +309,14 @@ function renderTable(date, dd) {
     h += '<td>' + (r.r1m > 0 ? '+' : '') + r.r1m.toFixed(1) + '%</td>';
     h += '<td>' + r.turnover.toFixed(1) + '%</td>';
     h += '<td>' + (r.isT0 || '-') + '</td>';
+    // 联接占比
+    const lr = r.linkRatio;
+    if (lr && lr > 0) {
+      const lrCls = lr > 20 ? 'color:#2563eb;font-weight:600' : (lr > 10 ? 'color:#475569;font-weight:500' : 'color:#94a3b8');
+      h += '<td style="' + lrCls + ';font-size:12px">' + lr.toFixed(1) + '%</td>';
+    } else {
+      h += '<td style="color:#e2e8f0;font-size:11px">-</td>';
+    }
     // 成交活跃TOP3 (按成交金额排序)
     h += '<td class="holdings-cell" style="font-size:11px">';
     if (r.holdings && r.holdings.length > 0) {
