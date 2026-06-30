@@ -41,53 +41,36 @@ ETF_LINK_MAP = {
     'sh513300': ['006479', '006480'],  # 广发纳斯达克100ETF联接A/C
     'sh513500': ['050025', '050025'],  # 博时标普500ETF联接A
 
-    # === 自选 ===
+    # === 策略/红利 ===
+    'sh515180': ['009051', '009052'],  # 易方达中证红利ETF联接A/C
+    'sh563020': ['020602', '020603'],  # 易方达中证红利低波动ETF联接A/C
+    'sh515080': ['012643', '012644'],  # 招商中证红利ETF联接A/C
     'sz159992': ['012767', '012768'],  # 中药ETF联接
     'sh512880': ['012716', '012717'],  # 证券ETF联接
     'sz159307': [],  # 无联接基金
     'sh515450': [],  # 无联接基金
-    'sh515080': [],  # 无联接基金
 }
 
 def fetch_link_fund_asset(fund_code):
-    """获取联接基金总资产(亿元)"""
+    """获取联接基金总资产(元)，从基金详情页提取"""
     try:
-        url = f'https://fund.eastmoney.com/pingzhongdata/{fund_code}.js'
+        url = f'https://fund.eastmoney.com/{fund_code}.html'
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         resp = urllib.request.urlopen(req, timeout=10)
-        text = resp.read().decode('utf-8')
+        html = resp.read().decode('utf-8', errors='replace')
         
-        # Data_grandTotal: [{name:'基金名', data:[[ts, 规模(亿元)],...]}, ...]
-        match = re.search(r'Data_grandTotal\s*=\s*(\[.*?\]);', text, re.DOTALL)
-        if not match:
-            return None
+        m = re.search(r'规模</a>[：:]([\d.]+)亿元', html)
+        if m:
+            scale_yi = float(m.group(1))
+            if scale_yi > 0:
+                return scale_yi * 1e8
         
-        data = json.loads(match.group(1))
-        if not data or not isinstance(data, list) or len(data) < 3:
-            return None
-        
-        # 找到本基金的真实规模数据
-        fund_entry = None
-        for entry in data:
-            name = entry.get('name', '')
-            if not name or name in ('同类平均', '沪深300', '中证500', '中证800', '业绩基准'):
-                continue
-            if entry.get('data') and len(entry['data']) > 0:
-                latest = entry['data'][-1]
-                val = latest[1]
-                if val > 0:
-                    fund_entry = entry
-                    break
-        
-        if not fund_entry or not fund_entry.get('data'):
-            return None
-        
-        latest = fund_entry['data'][-1]
-        scale_yi = latest[1]
-        if scale_yi <= 0:
-            return None
-        return scale_yi * 1e8
-    except Exception as e:
+        # 备用
+        m2 = re.search(r'规模[：:]([\d.]+)亿元', html)
+        if m2:
+            scale = float(m2.group(1))
+            if scale > 0:
+                return scale * 1e8
         return None
 
 def get_all_etf_data():

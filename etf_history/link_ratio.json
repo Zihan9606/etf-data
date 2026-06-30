@@ -1,6 +1,6 @@
 {
   "date": "2026-06-30",
-  "count": 16,
+  "count": 18,
   "data": {
     "sh510300": {
       "etfName": "沪深300",
@@ -176,6 +176,28 @@
         "012768"
       ],
       "linkHoldRatio": 5.0,
+      "assumedRatio": 0.92
+    },
+    "sh515180": {
+      "etfName": "中证红利",
+      "etfTotalAssets": 15779280000.0,
+      "totalLinkAssets": 5098000000.0,
+      "linkFunds": [
+        "009051",
+        "009052"
+      ],
+      "linkHoldRatio": 29.72,
+      "assumedRatio": 0.92
+    },
+    "sh563020": {
+      "etfName": "红利低波",
+      "etfTotalAssets": 11336650000.000002,
+      "totalLinkAssets": 3003000000.0,
+      "linkFunds": [
+        "020602",
+        "020603"
+      ],
+      "linkHoldRatio": 24.37,
       "assumedRatio": 0.92
     }
   }
