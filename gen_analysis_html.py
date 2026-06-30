@@ -1166,11 +1166,19 @@ function renderShareholders() {
     h += '<div style="font-size:11px;line-height:1.6">' + sh.alerts.slice(0, 10).map(a => '📌 ' + a).join('<br>') + '</div></div>';
   }
 
-  // 筛选栏
+  // 筛选栏(独立于其他tab)
   const allDirections = ['全部', '增持', '减持', '不变', '新进'];
   const allCategories = ['全部', '社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '个人', '其他'];
+  // 计算默认日期范围(近3个月)
+  const threeMonthsAgo = new Date(); threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const defaultStart = threeMonthsAgo.toISOString().slice(0,10);
+  const todayStr = new Date().toISOString().slice(0,10);
   h += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">';
-  h += '<label style="font-size:12px;color:#475569">股东类型:</label>';
+  h += '<label style="font-size:12px;color:#475569">数据时间:</label>';
+  h += '<input type="date" id="shStartDate" value="' + defaultStart + '" onchange="filterShareholders()" style="padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
+  h += '<span style="font-size:12px;color:#94a3b8">~</span>';
+  h += '<input type="date" id="shEndDate" value="' + todayStr + '" onchange="filterShareholders()" style="padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
+  h += '<label style="font-size:12px;color:#475569;margin-left:8px">股东类型:</label>';
   h += '<select id="shCatFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
   for (const c of allCategories) h += '<option value="' + c + '">' + c + '</option>';
   h += '</select>';
@@ -1178,28 +1186,41 @@ function renderShareholders() {
   h += '<select id="shDirFilter" onchange="filterShareholders()" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;font-size:12px">';
   for (const d of allDirections) h += '<option value="' + d + '">' + d + '</option>';
   h += '</select>';
-  h += '<span style="font-size:11px;color:#94a3b8;margin-left:8px">共' + sh.allEntries.length + '条数据</span>';
+  h += '<span style="font-size:11px;color:#94a3b8;margin-left:8px" id="shCountInfo">共' + sh.allEntries.length + '条数据</span>';
   h += '</div>';
 
-  h += '<div id="shTableContainer">';
-  h += _renderShTable(sh, '全部', '全部');
+  h += '<div id="shTableContainer" style="min-height:200px">';
+  h += _renderShTable(sh, '全部', '全部', defaultStart, todayStr);
   h += '</div>';
 
   h += '<div class="footnote" style="margin-top:16px">📅 数据来源: 东方财富F10 季度报告 · 报告期: ' + (sh.date || '未知') + '</div>';
   container.innerHTML = h;
 }
 
-function _renderShTable(sh, catFilter, dirFilter) {
+function _renderShTable(sh, catFilter, dirFilter, startDate, endDate) {
   let h = '';
   const catOrder = ['社保基金', '券商自营', '国家队', '北向资金(陆股通)', '养老金', '基金', '保险', '银行/信托', 'QFII', '个人', '其他'];
   let hasAny = false;
+  let totalCount = 0;
   for (const cat of catOrder) {
     if (catFilter !== '全部' && cat !== catFilter) continue;
     const items = (sh.shareholders && sh.shareholders[cat]) || [];
     let filtered = items;
     if (dirFilter !== '全部') {
-      filtered = items.filter(i => i.direction === dirFilter);
+      filtered = filtered.filter(i => i.direction === dirFilter);
     }
+    if (startDate || endDate) {
+      filtered = filtered.filter(i => {
+        const d = i.endDate || '';
+        if (!d) return true;
+        if (startDate && d < startDate) return false;
+        if (endDate && d > endDate) return false;
+        return true;
+      });
+    }
+    if (filtered.length === 0) continue;
+    hasAny = true;
+    totalCount += filtered.length;
     if (filtered.length === 0) continue;
     hasAny = true;
     h += '<h4 style="margin:16px 0 8px">' + cat + ' <span class="count-badge">' + filtered.length + '条</span></h4>';
@@ -1224,11 +1245,23 @@ function _renderShTable(sh, catFilter, dirFilter) {
 function filterShareholders() {
   const catFilter = document.getElementById('shCatFilter').value;
   const dirFilter = document.getElementById('shDirFilter').value;
+  const startDate = document.getElementById('shStartDate') ? document.getElementById('shStartDate').value : '';
+  const endDate = document.getElementById('shEndDate') ? document.getElementById('shEndDate').value : '';
   const meta = ALL_DATA._meta;
   const sh = meta && meta.shareholders;
   if (!sh) return;
   const container = document.getElementById('shTableContainer');
-  container.innerHTML = _renderShTable(sh, catFilter, dirFilter);
+  const html = _renderShTable(sh, catFilter, dirFilter, startDate, endDate);
+  container.innerHTML = html;
+  // 更新计数
+  const info = document.getElementById('shCountInfo');
+  if (info) {
+    const match = html.match(/class="count-badge">(\d+)条/g);
+    if (match) {
+      const total = match.reduce((s, m) => s + parseInt(m.match(/\d+/)[0]), 0);
+      info.textContent = '筛选结果 ' + total + '条';
+    }
+  }
 }
 
 // ========== 初始化: 从JSON文件加载 ==========
