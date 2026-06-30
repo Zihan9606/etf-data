@@ -1,0 +1,182 @@
+{
+  "date": "2026-06-30",
+  "count": 16,
+  "data": {
+    "sh510300": {
+      "etfName": "沪深300",
+      "etfTotalAssets": 122151150000.0,
+      "totalLinkAssets": 1519000000.0,
+      "linkFunds": [
+        "000051",
+        "006131"
+      ],
+      "linkHoldRatio": 1.14,
+      "assumedRatio": 0.92
+    },
+    "sh510050": {
+      "etfName": "上证50",
+      "etfTotalAssets": 22105440000.0,
+      "totalLinkAssets": 2834000000.0,
+      "linkFunds": [
+        "110003",
+        "110019"
+      ],
+      "linkHoldRatio": 11.79,
+      "assumedRatio": 0.92
+    },
+    "sh510500": {
+      "etfName": "中证500",
+      "etfTotalAssets": 38155320000.0,
+      "totalLinkAssets": 2089000000.0,
+      "linkFunds": [
+        "160119",
+        "160120"
+      ],
+      "linkHoldRatio": 5.04,
+      "assumedRatio": 0.92
+    },
+    "sh512100": {
+      "etfName": "中证1000",
+      "etfTotalAssets": 11263590000.0,
+      "totalLinkAssets": 7068000000.000001,
+      "linkFunds": [
+        "006430",
+        "006431"
+      ],
+      "linkHoldRatio": 57.73,
+      "assumedRatio": 0.92
+    },
+    "sz159338": {
+      "etfName": "中证A500",
+      "etfTotalAssets": 24329320000.0,
+      "totalLinkAssets": 2364000000.0,
+      "linkFunds": [
+        "022455",
+        "022456"
+      ],
+      "linkHoldRatio": 8.94,
+      "assumedRatio": 0.92
+    },
+    "sz159915": {
+      "etfName": "创业板指",
+      "etfTotalAssets": 47838230000.0,
+      "totalLinkAssets": 4596000000.0,
+      "linkFunds": [
+        "110026",
+        "110027"
+      ],
+      "linkHoldRatio": 8.84,
+      "assumedRatio": 0.92
+    },
+    "sz159949": {
+      "etfName": "创业板50",
+      "etfTotalAssets": 25318159999.999996,
+      "totalLinkAssets": 3358000000.0,
+      "linkFunds": [
+        "003766",
+        "003767"
+      ],
+      "linkHoldRatio": 12.2,
+      "assumedRatio": 0.92
+    },
+    "sh588000": {
+      "etfName": "科创50",
+      "etfTotalAssets": 63957240000.0,
+      "totalLinkAssets": 11666000000.0,
+      "linkFunds": [
+        "011613",
+        "011614"
+      ],
+      "linkHoldRatio": 16.78,
+      "assumedRatio": 0.92
+    },
+    "sh512480": {
+      "etfName": "半导体",
+      "etfTotalAssets": 21051370000.0,
+      "totalLinkAssets": 9553000000.0,
+      "linkFunds": [
+        "007301",
+        "007302"
+      ],
+      "linkHoldRatio": 41.75,
+      "assumedRatio": 0.92
+    },
+    "sz159995": {
+      "etfName": "芯片",
+      "etfTotalAssets": 29169750000.0,
+      "totalLinkAssets": 17197000000.0,
+      "linkFunds": [
+        "008887",
+        "008888"
+      ],
+      "linkHoldRatio": 54.24,
+      "assumedRatio": 0.92
+    },
+    "sz159819": {
+      "etfName": "人工智能",
+      "etfTotalAssets": 22642250000.0,
+      "totalLinkAssets": 4712000000.0,
+      "linkFunds": [
+        "009239",
+        "009240"
+      ],
+      "linkHoldRatio": 19.15,
+      "assumedRatio": 0.92
+    },
+    "sh516270": {
+      "etfName": "新能源",
+      "etfTotalAssets": 223299999.99999997,
+      "totalLinkAssets": 159000000.0,
+      "linkFunds": [
+        "013572",
+        "013573"
+      ],
+      "linkHoldRatio": 65.51,
+      "assumedRatio": 0.92
+    },
+    "sh512880": {
+      "etfName": "证券",
+      "etfTotalAssets": 55775669999.99999,
+      "totalLinkAssets": 9195000000.0,
+      "linkFunds": [
+        "012716",
+        "012717"
+      ],
+      "linkHoldRatio": 15.17,
+      "assumedRatio": 0.92
+    },
+    "sh513300": {
+      "etfName": "纳斯达克100",
+      "etfTotalAssets": 13283840000.0,
+      "totalLinkAssets": 2838000000.0,
+      "linkFunds": [
+        "006479",
+        "006480"
+      ],
+      "linkHoldRatio": 19.66,
+      "assumedRatio": 0.92
+    },
+    "sh513500": {
+      "etfName": "标普500",
+      "etfTotalAssets": 23936120000.0,
+      "totalLinkAssets": 900000000.0,
+      "linkFunds": [
+        "050025",
+        "050025"
+      ],
+      "linkHoldRatio": 3.46,
+      "assumedRatio": 0.92
+    },
+    "sz159992": {
+      "etfName": "自选-sz159992",
+      "etfTotalAssets": 15189790000.000002,
+      "totalLinkAssets": 825000000.0,
+      "linkFunds": [
+        "012767",
+        "012768"
+      ],
+      "linkHoldRatio": 5.0,
+      "assumedRatio": 0.92
+    }
+  }
+}
